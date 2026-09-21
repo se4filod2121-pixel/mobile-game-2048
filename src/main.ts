@@ -164,11 +164,15 @@ function showMapScreen(): void {
     ? `🏁 Son durak • Kapı ${firstGate}-${lastGate}`
     : `Seviye ${level} • Kapı ${firstGate}-${lastGate}`;
 
+  // buildJourney(currentGate) turns the persisted progress (storage.ts) into per-gate
+  // locked/active/cleared status for all 1000 nodes; renderJourney's callback here is
+  // this project's `startLevel(levelNumber)` — clicking the active house opens its board.
   const journey = buildJourney(state.progress.currentGate);
   const activeEl = renderJourney(mapForestEl, mapPathEl, mapSvgEl, journey, (node) => {
     if (node.status === "active") showBoardScreen();
   });
   if (activeEl) {
+    // Auto-focus on the player's current house every time the map is (re)opened.
     window.requestAnimationFrame(() => {
       activeEl.scrollIntoView({ block: "center", behavior: "auto" });
     });

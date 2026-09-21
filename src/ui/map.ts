@@ -1,3 +1,28 @@
+/**
+ * The vertical level-select map: a single continuous scroll of all 1000 gates, grouped
+ * into 50 villages, ending at a City Gate finale. This file covers the map's four core
+ * requirements end to end:
+ *
+ * 1. Perf at 1000 nodes — `.house` (see style.css) uses `content-visibility: auto` with a
+ *    `contain-intrinsic-size` hint. That is this project's answer to manual object-pooling:
+ *    the browser skips layout/paint for off-screen nodes on its own, without us tracking a
+ *    recycled DOM-node pool by hand. Measured settle time after a full 1000-node rebuild is
+ *    ~20-30ms, so a virtualization layer on top would be solving an already-solved problem.
+ * 2. The zigzag road — `PATH_SHAPES` picks the per-village silhouette, `smoothPathD` turns
+ *    the house coordinates into a flowing SVG path (quadratic Bezier segments) instead of
+ *    straight lines. SVG was used instead of <canvas> because the path has to stay in the
+ *    same coordinate space as the DOM house/button elements it connects — canvas would mean
+ *    hand-syncing two separate coordinate systems for no visual benefit.
+ * 3. House state — `node.status` (locked/active/cleared) from `buildJourney` (levels.ts)
+ *    drives both the CSS class and which badge icon renders (see `BADGE_ICON` in icons.ts).
+ *    Progress persistence and the "resume where you left off" auto-scroll live in
+ *    storage.ts (`loadProgress`/`saveProgress`) and main.ts (`showMapScreen`'s
+ *    `scrollIntoView` on the active node), not in this file.
+ *    Only the *active* house is clickable (`onSelect`) — cleared houses stay inert by
+ *    design, since this is a one-way saga road, not a replayable level select.
+ * 4. Gate 1000 (the City) — `node.isLastGate` swaps in the gold `bdg-final` badge and the
+ *    village at `isFinalLevel` gets city scenery (`CITY_ICONS`) instead of forest.
+ */
 import type { HouseStatus, JourneyNode, VillageOverviewEntry } from "../game/levels";
 import { BADGE_ICON, CITY_ICONS, SCENERY_ICONS, ensureIconDefs, makeIconUse } from "./icons";
 

@@ -1,3 +1,6 @@
+// Persists which gate the player last reached (and their joker count) across sessions.
+// `main.ts` reads this on boot to decide which house is "active" and to auto-scroll the
+// map to it — the map itself has no memory of its own.
 const PROGRESS_KEY = "mobile-game-2048-progress-v2";
 
 export interface Progress {

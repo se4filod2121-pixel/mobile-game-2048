@@ -397,6 +397,9 @@ button {
   padding: 4px;
   cursor: pointer;
   color: var(--ink);
+  /* Perf for 1000 nodes: skip layout/paint while off-screen instead of hand-rolled
+     object pooling. contain-intrinsic-size reserves the space so scroll height/position
+     stay correct before a node has ever been rendered. */
   content-visibility: auto;
   contain-intrinsic-size: 74px 90px;
 }

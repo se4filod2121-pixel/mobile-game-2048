@@ -54,8 +54,14 @@ const VILLAGE_SUFFIXES = [
   { word: "Mağarası", icon: "💎" },
 ];
 
-/** A fantastical village name for each level, built from a prefix/suffix combinator (100 unique combos). */
+export function isFinalLevel(level: number): boolean {
+  return level >= TOTAL_LEVELS;
+}
+
+/** A fantastical village name for each level, built from a prefix/suffix combinator (100 unique combos).
+ *  The very last level is the journey's destination: the City Gate. */
 export function villageNameForLevel(level: number): string {
+  if (isFinalLevel(level)) return "Şehir Kapısı";
   const idx = level - 1;
   const prefix = VILLAGE_PREFIXES[idx % VILLAGE_PREFIXES.length];
   const suffix = VILLAGE_SUFFIXES[Math.floor(idx / VILLAGE_PREFIXES.length) % VILLAGE_SUFFIXES.length];
@@ -63,8 +69,16 @@ export function villageNameForLevel(level: number): string {
 }
 
 export function villageIconForLevel(level: number): string {
+  if (isFinalLevel(level)) return "🏛️";
   const idx = level - 1;
   return VILLAGE_SUFFIXES[Math.floor(idx / VILLAGE_PREFIXES.length) % VILLAGE_SUFFIXES.length].icon;
+}
+
+/** How many distinct path shapes the village map can draw — each level cycles to the next one. */
+export const PATH_VARIANT_COUNT = 6;
+
+export function pathVariantForLevel(level: number): number {
+  return (level - 1) % PATH_VARIANT_COUNT;
 }
 
 /** Global gate number for the Nth house (1-based) of a village/level. */

@@ -7,7 +7,9 @@ import {
   buildHouseStates,
   gateForHouse,
   hueForLevel,
+  isFinalLevel,
   levelForGate,
+  pathVariantForLevel,
   targetForGate,
   villageIconForLevel,
   villageNameForLevel,
@@ -23,6 +25,7 @@ const boardScreenEl = document.getElementById("board-screen") as HTMLElement;
 const villageIconEl = document.getElementById("village-icon") as HTMLElement;
 const villageNameEl = document.getElementById("village-name") as HTMLElement;
 const villageSubEl = document.getElementById("village-sub") as HTMLElement;
+const mapForestEl = document.getElementById("map-forest") as HTMLElement;
 const mapPathEl = document.getElementById("map-path") as HTMLElement;
 const mapSvgEl = document.getElementById("map-svg") as unknown as SVGSVGElement;
 const backToMapBtn = document.getElementById("back-to-map") as HTMLButtonElement;
@@ -142,16 +145,28 @@ function showMapScreen(): void {
   applyLevelTheme();
 
   const level = levelForGate(state.progress.currentGate);
+  const isFinal = isFinalLevel(level);
   villageIconEl.textContent = villageIconForLevel(level);
   villageNameEl.textContent = villageNameForLevel(level);
   const firstGate = gateForHouse(level, 1);
   const lastGate = gateForHouse(level, GATES_PER_LEVEL);
-  villageSubEl.textContent = `Seviye ${level} • Kapı ${firstGate}-${lastGate}`;
+  villageSubEl.textContent = isFinal
+    ? `🏁 Son durak • Kapı ${firstGate}-${lastGate}`
+    : `Seviye ${level} • Kapı ${firstGate}-${lastGate}`;
 
   const houses = buildHouseStates(level, state.progress.currentGate);
-  const activeEl = renderVillageMap(mapPathEl, mapSvgEl, houses, (house) => {
-    if (house.status === "active") showBoardScreen();
-  });
+  const activeEl = renderVillageMap(
+    mapForestEl,
+    mapPathEl,
+    mapSvgEl,
+    houses,
+    level,
+    pathVariantForLevel(level),
+    isFinal,
+    (house) => {
+      if (house.status === "active") showBoardScreen();
+    },
+  );
   if (activeEl) {
     window.requestAnimationFrame(() => {
       activeEl.scrollIntoView({ block: "center", behavior: "auto" });

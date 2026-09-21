@@ -191,7 +191,7 @@ button {
   -webkit-overflow-scrolling: touch;
 }
 
-.map-svg {
+.map-forest {
   position: absolute;
   top: 0;
   left: 0;
@@ -200,10 +200,24 @@ button {
   z-index: 0;
 }
 
+.scenery-item {
+  position: absolute;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.map-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .map-path {
   position: relative;
+  z-index: 2;
   width: 100%;
-  z-index: 1;
 }
 
 .house {

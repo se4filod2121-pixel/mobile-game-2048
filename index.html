@@ -53,12 +53,21 @@
             <h2 id="village-name">Ay Köyü</h2>
             <p id="village-sub">Seviye 1 • Kapı 1-20</p>
           </div>
+          <button id="open-overview" class="btn-overview" type="button" title="Tüm köyleri gör">🗺️</button>
         </div>
         <div class="map-scroll" id="map-scroll">
           <div id="map-forest" class="map-forest"></div>
           <svg id="map-svg" class="map-svg"></svg>
           <div id="map-path" class="map-path"></div>
         </div>
+      </section>
+
+      <section id="overview-screen" class="screen" hidden>
+        <div class="overview-header">
+          <h2>🗺️ Yolculuk Haritası</h2>
+          <button id="close-overview" class="btn btn-back" type="button">✕ Kapat</button>
+        </div>
+        <div class="overview-list" id="overview-list"></div>
       </section>
 
       <section id="board-screen" class="screen" hidden>

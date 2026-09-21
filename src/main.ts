@@ -5,6 +5,7 @@ import {
   TOTAL_GATES,
   awardsJoker,
   buildHouseStates,
+  buildVillageOverview,
   gateForHouse,
   hueForLevel,
   isFinalLevel,
@@ -18,9 +19,10 @@ import { loadProgress, saveProgress, type Progress } from "./game/storage";
 import type { Direction, Tile } from "./game/types";
 import { computeMetrics, renderGridBackground, renderTiles } from "./ui/render";
 import { attachInput } from "./ui/input";
-import { renderVillageMap } from "./ui/map";
+import { renderVillageMap, renderVillageOverview } from "./ui/map";
 
 const mapScreenEl = document.getElementById("map-screen") as HTMLElement;
+const overviewScreenEl = document.getElementById("overview-screen") as HTMLElement;
 const boardScreenEl = document.getElementById("board-screen") as HTMLElement;
 const villageIconEl = document.getElementById("village-icon") as HTMLElement;
 const villageNameEl = document.getElementById("village-name") as HTMLElement;
@@ -28,6 +30,9 @@ const villageSubEl = document.getElementById("village-sub") as HTMLElement;
 const mapForestEl = document.getElementById("map-forest") as HTMLElement;
 const mapPathEl = document.getElementById("map-path") as HTMLElement;
 const mapSvgEl = document.getElementById("map-svg") as unknown as SVGSVGElement;
+const overviewListEl = document.getElementById("overview-list") as HTMLElement;
+const openOverviewBtn = document.getElementById("open-overview") as HTMLButtonElement;
+const closeOverviewBtn = document.getElementById("close-overview") as HTMLButtonElement;
 const backToMapBtn = document.getElementById("back-to-map") as HTMLButtonElement;
 
 const boardEl = document.getElementById("board") as HTMLElement;
@@ -133,14 +138,20 @@ function startGate(): void {
   render();
 }
 
-function showBoardScreen(): void {
+function hideAllScreens(): void {
   mapScreenEl.hidden = true;
+  overviewScreenEl.hidden = true;
+  boardScreenEl.hidden = true;
+}
+
+function showBoardScreen(): void {
+  hideAllScreens();
   boardScreenEl.hidden = false;
   startGate();
 }
 
 function showMapScreen(): void {
-  boardScreenEl.hidden = true;
+  hideAllScreens();
   mapScreenEl.hidden = false;
   applyLevelTheme();
 
@@ -167,6 +178,19 @@ function showMapScreen(): void {
       if (house.status === "active") showBoardScreen();
     },
   );
+  if (activeEl) {
+    window.requestAnimationFrame(() => {
+      activeEl.scrollIntoView({ block: "center", behavior: "auto" });
+    });
+  }
+}
+
+function showOverviewScreen(): void {
+  hideAllScreens();
+  overviewScreenEl.hidden = false;
+
+  const entries = buildVillageOverview(state.progress.currentGate);
+  const activeEl = renderVillageOverview(overviewListEl, entries, showMapScreen);
   if (activeEl) {
     window.requestAnimationFrame(() => {
       activeEl.scrollIntoView({ block: "center", behavior: "auto" });
@@ -271,6 +295,8 @@ window.addEventListener("resize", () => {
 
 newGameBtn.addEventListener("click", startGate);
 backToMapBtn.addEventListener("click", showMapScreen);
+openOverviewBtn.addEventListener("click", showOverviewScreen);
+closeOverviewBtn.addEventListener("click", showMapScreen);
 
 overlayPrimaryBtn.addEventListener("click", () => {
   if (state.progress.currentGate >= TOTAL_GATES && state.over) {

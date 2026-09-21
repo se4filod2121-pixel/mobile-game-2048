@@ -163,12 +163,20 @@ button {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
+.village-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .village-text h2 {
   margin: 0;
   font-family: "Baloo 2", sans-serif;
   font-size: 1.25rem;
   font-weight: 800;
   color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .village-text p {
@@ -176,6 +184,116 @@ button {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--ink-dim);
+}
+
+.btn-overview {
+  appearance: none;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-overview:active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.overview-header h2 {
+  margin: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 68vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 2px;
+}
+
+.village-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  border-radius: 14px;
+  padding: 10px 14px;
+  color: var(--ink);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.village-row-cleared {
+  opacity: 0.85;
+  border-color: rgba(74, 222, 128, 0.4);
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.14), rgba(16, 185, 129, 0.1));
+}
+
+.village-row-active {
+  opacity: 1;
+  cursor: pointer;
+  border-color: #fff;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.28), rgba(168, 85, 247, 0.28));
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+}
+
+.village-row-final {
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.village-row-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.village-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.village-row-name {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.village-row-range {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink-dim);
+}
+
+.village-row-status {
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .map-scroll {
@@ -196,13 +314,40 @@ button {
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+}
+
+.map-forest-jungle {
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(22, 101, 52, 0.55), transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(21, 128, 61, 0.5), transparent 60%),
+    radial-gradient(circle at 45% 45%, rgba(20, 83, 45, 0.55), transparent 60%),
+    radial-gradient(circle at 10% 75%, rgba(22, 101, 52, 0.5), transparent 60%),
+    radial-gradient(circle at 85% 70%, rgba(21, 128, 61, 0.5), transparent 60%),
+    radial-gradient(circle at 55% 95%, rgba(20, 83, 45, 0.5), transparent 60%);
+  background-size: 230px 230px;
+  background-repeat: repeat;
+}
+
+.map-forest-city {
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(251, 191, 36, 0.16), transparent 55%),
+    radial-gradient(circle at 80% 30%, rgba(168, 85, 247, 0.14), transparent 55%),
+    radial-gradient(circle at 40% 75%, rgba(244, 114, 182, 0.14), transparent 55%);
+  background-size: 260px 260px;
+  background-repeat: repeat;
 }
 
 .scenery-item {
   position: absolute;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.scenery-back {
+  filter: blur(1.5px) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
 }
 
 .map-svg {

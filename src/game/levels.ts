@@ -105,3 +105,32 @@ export function buildHouseStates(level: number, currentGate: number): HouseState
   }
   return houses;
 }
+
+export interface VillageOverviewEntry {
+  level: number;
+  name: string;
+  icon: string;
+  firstGate: number;
+  lastGate: number;
+  status: HouseStatus;
+  isFinal: boolean;
+}
+
+/** All 50 villages of the journey, with how far the player has gotten through them. */
+export function buildVillageOverview(currentGate: number): VillageOverviewEntry[] {
+  const currentLevel = levelForGate(currentGate);
+  const entries: VillageOverviewEntry[] = [];
+  for (let level = 1; level <= TOTAL_LEVELS; level++) {
+    const status: HouseStatus = level < currentLevel ? "cleared" : level === currentLevel ? "active" : "locked";
+    entries.push({
+      level,
+      name: villageNameForLevel(level),
+      icon: villageIconForLevel(level),
+      firstGate: gateForHouse(level, 1),
+      lastGate: gateForHouse(level, GATES_PER_LEVEL),
+      status,
+      isFinal: isFinalLevel(level),
+    });
+  }
+  return entries;
+}

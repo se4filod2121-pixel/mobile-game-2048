@@ -1,4 +1,4 @@
-import type { HouseState } from "../game/levels";
+import type { HouseState, VillageOverviewEntry } from "../game/levels";
 
 const ROW_HEIGHT = 84;
 const TOP_PAD = 50;
@@ -21,7 +21,8 @@ const STATUS_ICON: Record<HouseState["status"], string> = {
   locked: "🔒",
 };
 
-const FOREST_EMOJI = ["🌲", "🌳", "🌿", "🍃"];
+const FOREST_CANOPY = ["🌳", "🌲", "🌴"];
+const FOREST_UNDERGROWTH = ["🌿", "🍃", "☘️", "🌱"];
 const CITY_EMOJI = ["🏛️", "🚪", "✨", "🏙️"];
 
 /** Small deterministic PRNG so a village's decoration looks the same every time it's rendered. */
@@ -37,18 +38,64 @@ function mulberry32(seed: number): () => number {
 
 function renderScenery(container: HTMLElement, height: number, level: number, isFinal: boolean): void {
   container.innerHTML = "";
+  container.classList.toggle("map-forest-city", isFinal);
+  container.classList.toggle("map-forest-jungle", !isFinal);
   const rand = mulberry32(level * 7919 + 13);
-  const pool = isFinal ? CITY_EMOJI : FOREST_EMOJI;
-  const count = Math.max(8, Math.round(height / 70));
-  for (let i = 0; i < count; i++) {
+
+  if (isFinal) {
+    const count = Math.max(14, Math.round(height / 55));
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("span");
+      el.className = "scenery-item";
+      el.textContent = CITY_EMOJI[Math.floor(rand() * CITY_EMOJI.length)];
+      el.style.left = `${4 + rand() * 92}%`;
+      el.style.top = `${rand() * height}px`;
+      el.style.fontSize = `${1.1 + rand() * 1.1}rem`;
+      el.style.opacity = String(0.18 + rand() * 0.22);
+      el.style.transform = `rotate(${(rand() - 0.5) * 30}deg)`;
+      container.appendChild(el);
+    }
+    return;
+  }
+
+  // Dense multi-layer canopy: a blurred, oversized back layer for depth, then a thick
+  // mid layer of full trees, then a scattered front layer of undergrowth on top.
+  const backCount = Math.max(18, Math.round(height / 42));
+  for (let i = 0; i < backCount; i++) {
+    const el = document.createElement("span");
+    el.className = "scenery-item scenery-back";
+    el.textContent = FOREST_CANOPY[Math.floor(rand() * FOREST_CANOPY.length)];
+    el.style.left = `${rand() * 100}%`;
+    el.style.top = `${rand() * height}px`;
+    el.style.fontSize = `${2.4 + rand() * 1.6}rem`;
+    el.style.opacity = String(0.22 + rand() * 0.14);
+    el.style.transform = `rotate(${(rand() - 0.5) * 20}deg)`;
+    container.appendChild(el);
+  }
+
+  const midCount = Math.max(30, Math.round(height / 22));
+  for (let i = 0; i < midCount; i++) {
     const el = document.createElement("span");
     el.className = "scenery-item";
-    el.textContent = pool[Math.floor(rand() * pool.length)];
-    el.style.left = `${4 + rand() * 92}%`;
+    el.textContent = FOREST_CANOPY[Math.floor(rand() * FOREST_CANOPY.length)];
+    el.style.left = `${rand() * 100}%`;
     el.style.top = `${rand() * height}px`;
-    el.style.fontSize = `${1.1 + rand() * 1.1}rem`;
-    el.style.opacity = String(0.16 + rand() * 0.2);
+    el.style.fontSize = `${1.3 + rand() * 1.3}rem`;
+    el.style.opacity = String(0.32 + rand() * 0.26);
     el.style.transform = `rotate(${(rand() - 0.5) * 30}deg)`;
+    container.appendChild(el);
+  }
+
+  const frontCount = Math.max(20, Math.round(height / 30));
+  for (let i = 0; i < frontCount; i++) {
+    const el = document.createElement("span");
+    el.className = "scenery-item";
+    el.textContent = FOREST_UNDERGROWTH[Math.floor(rand() * FOREST_UNDERGROWTH.length)];
+    el.style.left = `${rand() * 100}%`;
+    el.style.top = `${rand() * height}px`;
+    el.style.fontSize = `${0.9 + rand() * 0.9}rem`;
+    el.style.opacity = String(0.3 + rand() * 0.3);
+    el.style.transform = `rotate(${(rand() - 0.5) * 40}deg)`;
     container.appendChild(el);
   }
 }
@@ -121,6 +168,63 @@ export function renderVillageMap(
 
     node.addEventListener("click", () => onSelect(house));
     pathEl.appendChild(node);
+  });
+
+  return activeEl;
+}
+
+const VILLAGE_ROW_STATUS_BADGE: Record<HouseState["status"], string> = {
+  cleared: "⭐",
+  active: "▶️",
+  locked: "🔒",
+};
+
+/** The full 50-village journey list, so a player can see how far the road goes. */
+export function renderVillageOverview(
+  listEl: HTMLElement,
+  entries: VillageOverviewEntry[],
+  onSelectActive: () => void,
+): HTMLElement | null {
+  listEl.innerHTML = "";
+  let activeEl: HTMLElement | null = null;
+
+  entries.forEach((entry) => {
+    const isActive = entry.status === "active";
+    const row = document.createElement(isActive ? "button" : "div") as HTMLElement;
+    if (isActive) (row as HTMLButtonElement).type = "button";
+    row.className = `village-row village-row-${entry.status}${entry.isFinal ? " village-row-final" : ""}`;
+
+    const icon = document.createElement("span");
+    icon.className = "village-row-icon";
+    icon.textContent = entry.icon;
+    row.appendChild(icon);
+
+    const text = document.createElement("span");
+    text.className = "village-row-text";
+
+    const name = document.createElement("span");
+    name.className = "village-row-name";
+    name.textContent = `${entry.level}. ${entry.name}`;
+    text.appendChild(name);
+
+    const range = document.createElement("span");
+    range.className = "village-row-range";
+    range.textContent = `Kapı ${entry.firstGate}-${entry.lastGate}`;
+    text.appendChild(range);
+
+    row.appendChild(text);
+
+    const status = document.createElement("span");
+    status.className = "village-row-status";
+    status.textContent = VILLAGE_ROW_STATUS_BADGE[entry.status];
+    row.appendChild(status);
+
+    if (isActive) {
+      row.addEventListener("click", onSelectActive);
+      activeEl = row;
+    }
+
+    listEl.appendChild(row);
   });
 
   return activeEl;

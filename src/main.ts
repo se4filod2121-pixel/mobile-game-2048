@@ -63,7 +63,12 @@ function vibrate(pattern: number | number[]): void {
   }
 }
 
+const MAX_VISIBLE_TOASTS = 3;
+
 function showToast(message: string, variant: string): void {
+  while (toastContainerEl.children.length >= MAX_VISIBLE_TOASTS) {
+    toastContainerEl.firstElementChild?.remove();
+  }
   const el = document.createElement("div");
   el.className = `toast toast-${variant}`;
   el.textContent = message;

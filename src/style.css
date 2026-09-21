@@ -303,7 +303,17 @@ button {
   overflow-y: auto;
   overflow-x: hidden;
   border-radius: 18px;
-  background: linear-gradient(180deg, #8bc34a 0%, #7cb342 45%, #689f38 100%);
+  /* Deep, layered woodland greens instead of a flat tint — darker at both edges for a
+     mystical, canopy-shaded feel rather than a flat lawn. */
+  background: linear-gradient(
+    180deg,
+    #5f9a34 0%,
+    #4f8f31 22%,
+    #3d7c28 45%,
+    #2f6420 68%,
+    #234d18 86%,
+    #163410 100%
+  );
   border: 3px solid rgba(255, 255, 255, 0.28);
   box-shadow:
     inset 0 2px 10px rgba(0, 0, 0, 0.15),
@@ -320,17 +330,25 @@ button {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  /* Dappled forest-floor light: soft highlight/shadow blotches at two tile scales, plus a
+     golden wash bleeding in near the City finale at the very bottom of the scroll. */
   background-image:
-    radial-gradient(circle at 22% 25%, rgba(255, 255, 255, 0.1), transparent 42%),
-    radial-gradient(circle at 72% 55%, rgba(0, 0, 0, 0.08), transparent 45%),
-    radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.07), transparent 40%),
+    radial-gradient(circle at 22% 25%, rgba(255, 255, 255, 0.12), transparent 42%),
+    radial-gradient(circle at 72% 55%, rgba(0, 0, 0, 0.16), transparent 45%),
+    radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.08), transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(0, 0, 0, 0.12), transparent 38%),
+    radial-gradient(circle at 10% 60%, rgba(255, 255, 255, 0.06), transparent 36%),
     linear-gradient(180deg, transparent 0%, transparent 93%, rgba(251, 191, 36, 0.4) 100%);
   background-size:
     190px 190px,
     190px 190px,
     190px 190px,
+    310px 310px,
+    260px 260px,
     100% 100%;
   background-repeat:
+    repeat,
+    repeat,
     repeat,
     repeat,
     repeat,
@@ -343,10 +361,21 @@ button {
   filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
 }
 
+/* Back layer: dim, blurred silhouettes far from the path for parallax-like depth. */
+.scenery-far {
+  opacity: 0.4;
+  filter: blur(1.5px) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Ground texture: small grass/mushroom/stone details, lighter shadow than foreground props. */
+.scenery-ground {
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
 .village-banner-marker {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -363,6 +392,16 @@ button {
   z-index: 3;
 }
 
+/* Always beside the path (left or right), picked per-node in map.ts — never centered
+   over it, so it can't sit on top of a house/lock. */
+.village-banner-marker-left {
+  left: 5%;
+}
+
+.village-banner-marker-right {
+  right: 5%;
+}
+
 .village-banner-marker-final {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.92), rgba(244, 114, 182, 0.92));
   border-color: #fff;
@@ -376,6 +415,8 @@ button {
   width: 100%;
   pointer-events: none;
   z-index: 1;
+  /* Lifts the trail off the ground with one soft shadow shared by both stroke layers. */
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.4));
 }
 
 .map-path {
@@ -422,7 +463,23 @@ button {
 }
 
 .house-locked .house-badge {
-  opacity: 0.82;
+  opacity: 0.68;
+}
+
+/* Gate 1000: the castle renders far larger than a regular cottage, so it reads as the
+   journey's destination even from a distance while it's still locked. */
+.house-finale {
+  width: 160px;
+  z-index: 4;
+}
+
+.house-finale .house-icon {
+  width: 108px;
+  height: 108px;
+}
+
+.house-finale .house-label {
+  font-size: 0.95rem;
 }
 
 .house-active .house-icon {

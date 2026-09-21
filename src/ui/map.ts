@@ -24,7 +24,19 @@
  *    village at `isFinalLevel` gets city scenery (`CITY_ICONS`) instead of forest.
  */
 import type { HouseStatus, JourneyNode, VillageOverviewEntry } from "../game/levels";
-import { BADGE_ICON, CITY_ICONS, SCENERY_ICONS, ensureIconDefs, makeIconUse } from "./icons";
+import {
+  BADGE_ICON,
+  CITY_ICONS,
+  FAR_TREE_ICON,
+  GROUND_DETAIL_ICONS,
+  SCENERY_ICONS,
+  ensureIconDefs,
+  makeIconUse,
+} from "./icons";
+
+/** The gate-1000 badge renders much larger than a regular cottage — the journey's payoff. */
+const FINAL_BADGE_SIZE = 108;
+const REGULAR_BADGE_SIZE = 54;
 
 const ROW_HEIGHT = 84;
 const TOP_PAD = 50;
@@ -96,30 +108,56 @@ export function renderJourney(
     y: TOP_PAD + (node.gate - 1) * ROW_HEIGHT,
   }));
 
-  // Groove (dark base) + bead overlay (round dashes) — a coin-chain trail without one DOM node per bead.
+  // Groove (dark, low, wide shadow) + a thick earthy-tan overlay — a raised woodland trail
+  // instead of a flat dashed line.
   const d = smoothPathD(points);
   const groove = document.createElementNS(SVG_NS, "path");
   groove.setAttribute("d", d);
   groove.setAttribute("fill", "none");
-  groove.setAttribute("stroke", "#7a5a26");
-  groove.setAttribute("stroke-width", "2.6");
+  groove.setAttribute("stroke", "#5c4419");
+  groove.setAttribute("stroke-width", "5.2");
   groove.setAttribute("stroke-linecap", "round");
-  groove.setAttribute("opacity", "0.55");
+  groove.setAttribute("opacity", "0.6");
   groove.setAttribute("vector-effect", "non-scaling-stroke");
   svgEl.appendChild(groove);
 
   const beads = document.createElementNS(SVG_NS, "path");
   beads.setAttribute("d", d);
   beads.setAttribute("fill", "none");
-  beads.setAttribute("stroke", "#ffd76b");
-  beads.setAttribute("stroke-width", "2.6");
+  beads.setAttribute("stroke", "#c4a484");
+  beads.setAttribute("stroke-width", "3.8");
   beads.setAttribute("stroke-linecap", "round");
-  beads.setAttribute("stroke-dasharray", "0.6 3.2");
+  beads.setAttribute("stroke-dasharray", "0.8 3.4");
   beads.setAttribute("vector-effect", "non-scaling-stroke");
   svgEl.appendChild(beads);
 
-  // Sparse flanking scenery: bushes/props sit beside the road, biased to the open side.
   const rand = mulberry32(42);
+
+  // Back layer: dim, blurred far-tree silhouettes scattered anywhere for parallax-like depth.
+  for (let i = 0; i < count; i += 3) {
+    if (rand() > 0.5) continue;
+    const y = points[i].y + (rand() - 0.5) * ROW_HEIGHT;
+    const el = makeIconUse(FAR_TREE_ICON, Math.round(50 + rand() * 30), "scenery-item scenery-far");
+    el.style.left = `${6 + rand() * 88}%`;
+    el.style.top = `${y}px`;
+    el.style.transform = "translate(-50%, -85%)";
+    forestEl.appendChild(el);
+  }
+
+  // Ground texture: dense, small grass/mushroom/stone details filling otherwise empty ground.
+  for (let i = 0; i < count; i++) {
+    const detailsHere = rand() < 0.55 ? 1 : rand() < 0.8 ? 2 : 0;
+    for (let d2 = 0; d2 < detailsHere; d2++) {
+      const iconId = GROUND_DETAIL_ICONS[Math.floor(rand() * GROUND_DETAIL_ICONS.length)];
+      const el = makeIconUse(iconId, Math.round(16 + rand() * 14), "scenery-item scenery-ground");
+      el.style.left = `${4 + rand() * 92}%`;
+      el.style.top = `${points[i].y + (rand() - 0.5) * ROW_HEIGHT}px`;
+      el.style.transform = `translate(-50%, -85%) rotate(${(rand() - 0.5) * 20}deg)`;
+      forestEl.appendChild(el);
+    }
+  }
+
+  // Foreground: bushes/trees/props sit beside the road, biased to its open side.
   for (let i = 0; i < count; i++) {
     if (rand() > 0.4) continue;
     const node = nodes[i];
@@ -141,9 +179,12 @@ export function renderJourney(
     const { x, y } = points[i];
 
     if (node.isFirstOfLevel) {
+      // Village name sits to whichever side the path isn't on at this row, so it never
+      // covers a house/lock — never centered on top of the path itself.
+      const bannerOnRight = x < 50;
       const banner = document.createElement("div");
-      banner.className = `village-banner-marker${node.isFinalLevel ? " village-banner-marker-final" : ""}`;
-      banner.style.top = `${y - 46}px`;
+      banner.className = `village-banner-marker${bannerOnRight ? " village-banner-marker-right" : " village-banner-marker-left"}${node.isFinalLevel ? " village-banner-marker-final" : ""}`;
+      banner.style.top = `${y}px`;
       const icon = document.createElement("span");
       icon.textContent = node.villageIcon;
       banner.appendChild(icon);
@@ -153,18 +194,19 @@ export function renderJourney(
       pathEl.appendChild(banner);
     }
 
+    const isBigFinale = node.isLastGate;
     const house = document.createElement("button");
     house.type = "button";
-    house.className = `house house-${node.status}`;
+    house.className = `house house-${node.status}${isBigFinale ? " house-finale" : ""}`;
     house.style.left = `${x}%`;
     house.style.top = `${y}px`;
     house.disabled = node.status !== "active";
 
     const icon = document.createElement("span");
     icon.className = "house-icon";
-    const badgeId =
-      node.isLastGate && node.status !== "locked" ? BADGE_ICON.final : BADGE_ICON[node.status];
-    icon.appendChild(makeIconUse(badgeId, 54, "house-badge"));
+    const badgeId = isBigFinale && node.status !== "locked" ? BADGE_ICON.final : BADGE_ICON[node.status];
+    const badgeSize = isBigFinale ? FINAL_BADGE_SIZE : REGULAR_BADGE_SIZE;
+    icon.appendChild(makeIconUse(badgeId, badgeSize, "house-badge"));
     house.appendChild(icon);
 
     const label = document.createElement("span");

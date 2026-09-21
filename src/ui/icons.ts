@@ -58,6 +58,14 @@ const SYMBOL_MARKUP = `
     <stop offset="55%" stop-color="#fbbf24"/>
     <stop offset="100%" stop-color="#b45309"/>
   </radialGradient>
+  <linearGradient id="gCottageWallLocked" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#b9b3a6"/>
+    <stop offset="100%" stop-color="#8e887c"/>
+  </linearGradient>
+  <linearGradient id="gCottageRoofLocked" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#7c7267"/>
+    <stop offset="100%" stop-color="#5a5248"/>
+  </linearGradient>
 </defs>
 
 <symbol id="ic-tree-round" viewBox="0 0 64 64">
@@ -171,6 +179,36 @@ const SYMBOL_MARKUP = `
   <ellipse cx="26" cy="28" rx="2.6" ry="1.6" fill="#fff" opacity="0.5"/>
 </symbol>
 
+<symbol id="ic-grass-tuft" viewBox="0 0 64 64">
+  <g stroke="#3f7d32" stroke-width="3.4" stroke-linecap="round" fill="none">
+    <path d="M22 56 C 20 44 24 36 26 30"/>
+    <path d="M30 57 C 30 42 32 34 32 26"/>
+    <path d="M38 56 C 40 44 38 36 36 30"/>
+    <path d="M46 57 C 46 46 44 40 42 34"/>
+  </g>
+</symbol>
+
+<symbol id="ic-mushroom" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="56" rx="10" ry="2.6" fill="rgba(0,0,0,0.2)"/>
+  <rect x="28" y="40" width="8" height="16" rx="3" fill="#f3e6d0"/>
+  <path d="M16 38 C 16 24 48 24 48 38 C 40 32 24 32 16 38 Z" fill="#e64545"/>
+  <circle cx="24" cy="32" r="2.2" fill="#fff"/>
+  <circle cx="34" cy="29" r="2.6" fill="#fff"/>
+  <circle cx="42" cy="33" r="1.8" fill="#fff"/>
+</symbol>
+
+<symbol id="ic-stone" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="56" rx="16" ry="3" fill="rgba(0,0,0,0.2)"/>
+  <path d="M14 50 C 10 38 20 28 32 28 C 46 28 54 38 50 50 C 40 56 22 56 14 50 Z" fill="url(#gStone)"/>
+  <path d="M20 34 C 26 30 38 30 44 36" fill="none" stroke="#fff" stroke-width="2" opacity="0.35"/>
+</symbol>
+
+<symbol id="ic-tree-far" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="52" rx="14" ry="3" fill="rgba(0,0,0,0.15)"/>
+  <rect x="30" y="34" width="4" height="16" fill="#1b3a1e"/>
+  <circle cx="32" cy="24" r="17" fill="#1b3a1e"/>
+</symbol>
+
 <symbol id="ic-cottage" viewBox="0 0 64 64">
   <ellipse cx="32" cy="58" rx="20" ry="4" fill="rgba(0,0,0,0.25)"/>
   <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#8a6a45"/>
@@ -235,40 +273,67 @@ const SYMBOL_MARKUP = `
 </symbol>
 
 <symbol id="bdg-locked" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="30" fill="url(#bLocked)"/>
-  <circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
-  <ellipse cx="24" cy="20" rx="10" ry="6" fill="#fff" opacity="0.16"/>
-  <rect x="22" y="30" width="20" height="16" rx="3" fill="#3f4650"/>
-  <path d="M25 30 v-6 a7 7 0 0 1 14 0 v6" fill="none" stroke="#3f4650" stroke-width="4"/>
-  <circle cx="32" cy="37" r="2.6" fill="#c8ccd2"/>
-  <rect x="31" y="38" width="2" height="4" fill="#c8ccd2"/>
+  <ellipse cx="32" cy="58" rx="19" ry="3.6" fill="rgba(0,0,0,0.22)"/>
+  <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#6f695d"/>
+  <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWallLocked)"/>
+  <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoofLocked)"/>
+  <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#463f36"/>
+  <rect x="16" y="42" width="8" height="8" rx="1" fill="#4a453d"/>
+  <rect x="40" y="42" width="8" height="8" rx="1" fill="#4a453d"/>
+  <circle cx="32" cy="49" r="12" fill="#3f4650" stroke="#e8e8ec" stroke-width="2"/>
+  <rect x="27" y="47" width="10" height="8" rx="2" fill="#c8ccd2"/>
+  <path d="M28.5 47 v-3.2 a3.5 3.5 0 0 1 7 0 v3.2" fill="none" stroke="#c8ccd2" stroke-width="2.2"/>
+  <circle cx="32" cy="50.5" r="1.6" fill="#3f4650"/>
 </symbol>
 
 <symbol id="bdg-active" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="30" fill="url(#bActive)"/>
-  <circle cx="32" cy="32" r="30" fill="none" stroke="#ffffff" stroke-width="2.4"/>
-  <ellipse cx="23" cy="19" rx="11" ry="6.5" fill="#fff" opacity="0.25"/>
-  <path d="M32 18 L47 30 V46 H37 V36 H27 V46 H17 V30 Z" fill="#ffffff"/>
-  <rect x="29" y="38" width="6" height="8" rx="1" fill="#a855f7"/>
+  <ellipse cx="32" cy="58" rx="22" ry="5" fill="#f472b6" opacity="0.3"/>
+  <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#8a6a45"/>
+  <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWall)"/>
+  <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoof)"/>
+  <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#6b4a2d"/>
+  <rect x="16" y="42" width="8" height="8" rx="1.5" fill="#ffe27a"/>
+  <rect x="40" y="42" width="8" height="8" rx="1.5" fill="#ffe27a"/>
+  <path d="M32 42 A5 6 0 0 1 37 48" fill="none" stroke="#4a3218" stroke-width="1.2"/>
+  <circle cx="32" cy="7" r="3.4" fill="#fff3c4"/>
+  <g stroke="#fff3c4" stroke-width="1.6" stroke-linecap="round">
+    <line x1="32" y1="0" x2="32" y2="2"/>
+    <line x1="25" y1="7" x2="27" y2="7"/>
+    <line x1="37" y1="7" x2="39" y2="7"/>
+  </g>
 </symbol>
 
 <symbol id="bdg-cleared" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="30" fill="url(#bCleared)"/>
-  <circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-  <ellipse cx="23" cy="19" rx="10" ry="6" fill="#fff" opacity="0.2"/>
-  <path d="M32 14 L36.5 25.5 L49 26.5 L39.5 34.5 L42.5 47 L32 40 L21.5 47 L24.5 34.5 L15 26.5 L27.5 25.5 Z" fill="#ffe27a" stroke="#c98a12" stroke-width="1"/>
+  <ellipse cx="32" cy="58" rx="20" ry="4" fill="rgba(0,0,0,0.2)"/>
+  <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#8a6a45"/>
+  <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWall)"/>
+  <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoof)"/>
+  <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#6b4a2d"/>
+  <rect x="16" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
+  <rect x="40" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
+  <circle cx="47" cy="18" r="12" fill="#22c55e" stroke="#fff" stroke-width="2.2"/>
+  <path d="M41 18 l4.2 4.2 l8 -8.6" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
 </symbol>
 
 <symbol id="bdg-final" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="30" fill="url(#bFinal)"/>
-  <circle cx="32" cy="32" r="30" fill="none" stroke="#fff" stroke-width="2.4"/>
-  <ellipse cx="23" cy="19" rx="11" ry="6.5" fill="#fff" opacity="0.3"/>
-  <polygon points="32,14 40,22 24,22" fill="#fff"/>
-  <rect x="21" y="22" width="22" height="4" fill="#fff"/>
-  <rect x="23" y="27" width="3.4" height="17" fill="#fff"/>
-  <rect x="30.3" y="27" width="3.4" height="17" fill="#fff"/>
-  <rect x="37.6" y="27" width="3.4" height="17" fill="#fff"/>
-  <rect x="20" y="44" width="24" height="4" fill="#fff"/>
+  <ellipse cx="32" cy="60" rx="28" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="6" y="26" width="14" height="32" fill="url(#gStone)"/>
+  <polygon points="6,26 6,19 9,19 9,23 12,23 12,19 15,19 15,23 20,23 20,26" fill="#c9c2b2"/>
+  <rect x="44" y="26" width="14" height="32" fill="url(#gStone)"/>
+  <polygon points="44,26 44,19 47,19 47,23 50,23 50,19 53,19 53,23 58,23 58,26" fill="#c9c2b2"/>
+  <rect x="18" y="18" width="28" height="40" fill="url(#gStoneCool)"/>
+  <polygon points="18,18 18,9 22,9 22,13 26,13 26,9 30,9 30,13 34,13 34,9 38,9 38,13 42,13 42,9 46,9 46,18" fill="#dfe6ee"/>
+  <path d="M26 58 v-12 a6 6 0 0 1 12 0 v12 z" fill="#4a3218"/>
+  <rect x="11" y="34" width="4.5" height="6.5" fill="#ffd76b"/>
+  <rect x="48.5" y="34" width="4.5" height="6.5" fill="#ffd76b"/>
+  <rect x="22.5" y="24" width="5.5" height="7.5" fill="#ffd76b"/>
+  <rect x="36" y="24" width="5.5" height="7.5" fill="#ffd76b"/>
+  <rect x="12.2" y="12" width="1.6" height="9" fill="#5d4526"/>
+  <polygon points="13.8,12 21,15.5 13.8,19" fill="#e64545"/>
+  <rect x="31.2" y="1" width="1.6" height="9" fill="#5d4526"/>
+  <polygon points="32.8,1 40,4.5 32.8,8" fill="#a855f7"/>
+  <rect x="50.2" y="12" width="1.6" height="9" fill="#5d4526"/>
+  <polygon points="51.8,12 59,15.5 51.8,19" fill="#e64545"/>
 </symbol>
 `;
 
@@ -301,6 +366,12 @@ export const SCENERY_ICONS = [
 ] as const;
 
 export const CITY_ICONS = ["ic-city-a", "ic-city-b", "ic-lamppost", "ic-gate-arch"] as const;
+
+/** Small, dense ground texture (grass/mushrooms/stones) scattered anywhere to fill empty ground. */
+export const GROUND_DETAIL_ICONS = ["ic-grass-tuft", "ic-mushroom", "ic-stone"] as const;
+
+/** A dim, blurred silhouette used sparsely far from the path for a parallax-like depth layer. */
+export const FAR_TREE_ICON = "ic-tree-far";
 
 export const BADGE_ICON: Record<"locked" | "active" | "cleared" | "final", string> = {
   locked: "bdg-locked",

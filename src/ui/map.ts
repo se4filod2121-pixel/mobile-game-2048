@@ -1,4 +1,5 @@
 import type { HouseStatus, JourneyNode, VillageOverviewEntry } from "../game/levels";
+import { BADGE_ICON, CITY_ICONS, SCENERY_ICONS, ensureIconDefs, makeIconUse } from "./icons";
 
 const ROW_HEIGHT = 84;
 const TOP_PAD = 50;
@@ -18,15 +19,6 @@ const PATH_SHAPES: Array<(i: number) => number> = [
 function pathVariantForLevel(level: number): number {
   return (level - 1) % PATH_SHAPES.length;
 }
-
-const STATUS_ICON: Record<JourneyNode["status"], string> = {
-  cleared: "⭐",
-  active: "🏠",
-  locked: "🔒",
-};
-
-const BUSH_EMOJI = ["🌳", "🌲", "🌴", "🌷", "🌻"];
-const CITY_PROPS = ["🏛️", "🚪", "🏙️", "✨"];
 
 /** Small deterministic PRNG so the scenery looks the same on every render, not reshuffled each frame. */
 function mulberry32(seed: number): () => number {
@@ -61,6 +53,7 @@ export function renderJourney(
   nodes: JourneyNode[],
   onSelect: (node: JourneyNode) => void,
 ): HTMLElement | null {
+  ensureIconDefs();
   pathEl.innerHTML = "";
   forestEl.innerHTML = "";
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
@@ -107,14 +100,13 @@ export function renderJourney(
     const node = nodes[i];
     const { x, y } = points[i];
     const onRight = x < 50;
-    const el = document.createElement("span");
-    el.className = "scenery-item";
-    const pool = node.isFinalLevel ? CITY_PROPS : BUSH_EMOJI;
-    el.textContent = pool[Math.floor(rand() * pool.length)];
+    const pool = node.isFinalLevel ? CITY_ICONS : SCENERY_ICONS;
+    const iconId = pool[Math.floor(rand() * pool.length)];
+    const size = Math.round(34 + rand() * 24);
+    const el = makeIconUse(iconId, size, "scenery-item");
     el.style.left = `${onRight ? 68 + rand() * 24 : 8 + rand() * 24}%`;
     el.style.top = `${y + (rand() - 0.5) * ROW_HEIGHT * 0.7}px`;
-    el.style.fontSize = `${1.4 + rand() * 1.2}rem`;
-    el.style.transform = `rotate(${(rand() - 0.5) * 24}deg)`;
+    el.style.transform = `translate(-50%, -85%) rotate(${(rand() - 0.5) * 14}deg)`;
     forestEl.appendChild(el);
   }
 
@@ -145,7 +137,9 @@ export function renderJourney(
 
     const icon = document.createElement("span");
     icon.className = "house-icon";
-    icon.textContent = node.isLastGate && node.status !== "locked" ? "🏛️" : STATUS_ICON[node.status];
+    const badgeId =
+      node.isLastGate && node.status !== "locked" ? BADGE_ICON.final : BADGE_ICON[node.status];
+    icon.appendChild(makeIconUse(badgeId, 54, "house-badge"));
     house.appendChild(icon);
 
     const label = document.createElement("span");

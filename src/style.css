@@ -339,9 +339,8 @@ button {
 
 .scenery-item {
   position: absolute;
-  font-size: 1.4rem;
-  opacity: 0.95;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
+  display: block;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
 }
 
 .village-banner-marker {
@@ -412,28 +411,23 @@ button {
   justify-content: center;
   width: 54px;
   height: 54px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-  opacity: 0.45;
 }
 
-.house-cleared .house-icon {
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.35), rgba(16, 185, 129, 0.35));
-  border-color: rgba(74, 222, 128, 0.55);
-  opacity: 0.95;
+.house-badge {
+  display: block;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.35));
+}
+
+.house-locked .house-badge {
+  opacity: 0.82;
 }
 
 .house-active .house-icon {
-  background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
-  border-color: #fff;
-  opacity: 1;
-  box-shadow:
-    0 0 0 4px rgba(244, 114, 182, 0.25),
-    0 8px 20px rgba(168, 85, 247, 0.55);
   animation: house-pulse 1.6s ease-in-out infinite;
+}
+
+.house-active .house-badge {
+  filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.75)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
 }
 
 @keyframes house-pulse {

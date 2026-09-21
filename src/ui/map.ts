@@ -29,13 +29,14 @@ import {
   CITY_ICONS,
   FAR_TREE_ICON,
   GROUND_DETAIL_ICONS,
+  MARGIN_FILLER_ICONS,
   SCENERY_ICONS,
   ensureIconDefs,
   makeIconUse,
 } from "./icons";
 
-/** The gate-1000 badge renders much larger than a regular cottage — the journey's payoff. */
-const FINAL_BADGE_SIZE = 108;
+/** The gate-1000 badge renders far larger than a regular cottage — the journey's payoff. */
+const FINAL_BADGE_SIZE = 260;
 const REGULAR_BADGE_SIZE = 54;
 
 const ROW_HEIGHT = 84;
@@ -108,28 +109,37 @@ export function renderJourney(
     y: TOP_PAD + (node.gate - 1) * ROW_HEIGHT,
   }));
 
-  // Groove (dark, low, wide shadow) + a thick earthy-tan overlay — a raised woodland trail
-  // instead of a flat dashed line.
+  // Groove (dark earth trench) + a real dirt-brown overlay — a thick, raised path (the
+  // .map-svg drop-shadow filter in style.css does the actual 3D "lifted off the ground" lift).
   const d = smoothPathD(points);
   const groove = document.createElementNS(SVG_NS, "path");
   groove.setAttribute("d", d);
   groove.setAttribute("fill", "none");
-  groove.setAttribute("stroke", "#5c4419");
-  groove.setAttribute("stroke-width", "5.2");
+  groove.setAttribute("stroke", "#5a3418");
+  groove.setAttribute("stroke-width", "8.4");
   groove.setAttribute("stroke-linecap", "round");
-  groove.setAttribute("opacity", "0.6");
+  groove.setAttribute("opacity", "0.75");
   groove.setAttribute("vector-effect", "non-scaling-stroke");
   svgEl.appendChild(groove);
 
   const beads = document.createElementNS(SVG_NS, "path");
   beads.setAttribute("d", d);
   beads.setAttribute("fill", "none");
-  beads.setAttribute("stroke", "#c4a484");
-  beads.setAttribute("stroke-width", "3.8");
+  beads.setAttribute("stroke", "#A0522D");
+  beads.setAttribute("stroke-width", "6.2");
   beads.setAttribute("stroke-linecap", "round");
-  beads.setAttribute("stroke-dasharray", "0.8 3.4");
-  beads.setAttribute("vector-effect", "non-scaling-stroke");
   svgEl.appendChild(beads);
+
+  const dirtDashes = document.createElementNS(SVG_NS, "path");
+  dirtDashes.setAttribute("d", d);
+  dirtDashes.setAttribute("fill", "none");
+  dirtDashes.setAttribute("stroke", "#8B5A2B");
+  dirtDashes.setAttribute("stroke-width", "1.6");
+  dirtDashes.setAttribute("stroke-linecap", "round");
+  dirtDashes.setAttribute("stroke-dasharray", "0.6 3.2");
+  dirtDashes.setAttribute("opacity", "0.7");
+  dirtDashes.setAttribute("vector-effect", "non-scaling-stroke");
+  svgEl.appendChild(dirtDashes);
 
   const rand = mulberry32(42);
 
@@ -154,6 +164,25 @@ export function renderJourney(
       el.style.top = `${points[i].y + (rand() - 0.5) * ROW_HEIGHT}px`;
       el.style.transform = `translate(-50%, -85%) rotate(${(rand() - 0.5) * 20}deg)`;
       forestEl.appendChild(el);
+    }
+  }
+
+  // Dense forest walls: both far margins packed solid with trees/bushes/boulders on every
+  // row, well outside the path's max swing (points.x never leaves ~18-82%), so the ground
+  // never reads as bald no matter which way this village's road curves.
+  for (let i = 0; i < count; i++) {
+    const y = points[i].y;
+    for (const onLeft of [true, false]) {
+      const itemsHere = rand() < 0.65 ? 2 : 1;
+      for (let k = 0; k < itemsHere; k++) {
+        const iconId = MARGIN_FILLER_ICONS[Math.floor(rand() * MARGIN_FILLER_ICONS.length)];
+        const size = Math.round(32 + rand() * 32);
+        const el = makeIconUse(iconId, size, "scenery-item scenery-margin");
+        el.style.left = `${onLeft ? rand() * 13 : 87 + rand() * 13}%`;
+        el.style.top = `${y + (rand() - 0.5) * ROW_HEIGHT}px`;
+        el.style.transform = `translate(-50%, -85%) rotate(${(rand() - 0.5) * 10}deg)`;
+        forestEl.appendChild(el);
+      }
     }
   }
 
@@ -201,6 +230,7 @@ export function renderJourney(
     house.style.left = `${x}%`;
     house.style.top = `${y}px`;
     house.disabled = node.status !== "active";
+    if (isBigFinale) house.style.containIntrinsicSize = "300px 330px";
 
     const icon = document.createElement("span");
     icon.className = "house-icon";

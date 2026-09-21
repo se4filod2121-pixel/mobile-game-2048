@@ -66,6 +66,15 @@ const SYMBOL_MARKUP = `
     <stop offset="0%" stop-color="#7c7267"/>
     <stop offset="100%" stop-color="#5a5248"/>
   </linearGradient>
+  <linearGradient id="gBoulder" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#9b968c"/>
+    <stop offset="100%" stop-color="#6b665c"/>
+  </linearGradient>
+  <radialGradient id="gCastleGlow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#fff3c4" stop-opacity="0.9"/>
+    <stop offset="60%" stop-color="#ffd76b" stop-opacity="0.35"/>
+    <stop offset="100%" stop-color="#ffd76b" stop-opacity="0"/>
+  </radialGradient>
 </defs>
 
 <symbol id="ic-tree-round" viewBox="0 0 64 64">
@@ -203,6 +212,13 @@ const SYMBOL_MARKUP = `
   <path d="M20 34 C 26 30 38 30 44 36" fill="none" stroke="#fff" stroke-width="2" opacity="0.35"/>
 </symbol>
 
+<symbol id="ic-boulder" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="57" rx="24" ry="5" fill="rgba(0,0,0,0.32)"/>
+  <path d="M8 48 C 2 30 16 14 34 14 C 54 14 60 28 56 44 C 52 58 14 60 8 48 Z" fill="url(#gBoulder)"/>
+  <path d="M14 32 C 22 24 40 22 50 30" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.25"/>
+  <path d="M18 44 C 26 40 38 42 44 48" fill="none" stroke="#000" stroke-width="2" opacity="0.15"/>
+</symbol>
+
 <symbol id="ic-tree-far" viewBox="0 0 64 64">
   <ellipse cx="32" cy="52" rx="14" ry="3" fill="rgba(0,0,0,0.15)"/>
   <rect x="30" y="34" width="4" height="16" fill="#1b3a1e"/>
@@ -217,12 +233,18 @@ const SYMBOL_MARKUP = `
   <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoof)"/>
   <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#6b4a2d"/>
   <path d="M32 42 A5 6 0 0 1 37 48" fill="none" stroke="#4a3218" stroke-width="1.2"/>
+  <rect x="12.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="25" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="16" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
   <line x1="20" y1="42" x2="20" y2="50" stroke="#4a3218" stroke-width="1"/>
   <line x1="16" y1="46" x2="24" y2="46" stroke="#4a3218" stroke-width="1"/>
+  <rect x="36.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="49" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="40" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
   <line x1="44" y1="42" x2="44" y2="50" stroke="#4a3218" stroke-width="1"/>
   <line x1="40" y1="46" x2="48" y2="46" stroke="#4a3218" stroke-width="1"/>
+  <rect x="9" y="52" width="6" height="3" rx="1" fill="#e64980" opacity="0.8"/>
+  <rect x="49" y="52" width="6" height="3" rx="1" fill="#ffd43b" opacity="0.8"/>
 </symbol>
 
 <symbol id="ic-city-a" viewBox="0 0 64 64">
@@ -292,7 +314,11 @@ const SYMBOL_MARKUP = `
   <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWall)"/>
   <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoof)"/>
   <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#6b4a2d"/>
+  <rect x="12.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="25" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="16" y="42" width="8" height="8" rx="1.5" fill="#ffe27a"/>
+  <rect x="36.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="49" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="40" y="42" width="8" height="8" rx="1.5" fill="#ffe27a"/>
   <path d="M32 42 A5 6 0 0 1 37 48" fill="none" stroke="#4a3218" stroke-width="1.2"/>
   <circle cx="32" cy="7" r="3.4" fill="#fff3c4"/>
@@ -309,31 +335,50 @@ const SYMBOL_MARKUP = `
   <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWall)"/>
   <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoof)"/>
   <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#6b4a2d"/>
+  <rect x="12.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="25" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="16" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
+  <rect x="36.5" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
+  <rect x="49" y="42" width="2.6" height="8" rx="0.6" fill="#5a7d52"/>
   <rect x="40" y="42" width="8" height="8" rx="1" fill="#7fb8d6"/>
   <circle cx="47" cy="18" r="12" fill="#22c55e" stroke="#fff" stroke-width="2.2"/>
   <path d="M41 18 l4.2 4.2 l8 -8.6" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
 </symbol>
 
 <symbol id="bdg-final" viewBox="0 0 64 64">
-  <ellipse cx="32" cy="60" rx="28" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <rect x="6" y="26" width="14" height="32" fill="url(#gStone)"/>
-  <polygon points="6,26 6,19 9,19 9,23 12,23 12,19 15,19 15,23 20,23 20,26" fill="#c9c2b2"/>
-  <rect x="44" y="26" width="14" height="32" fill="url(#gStone)"/>
-  <polygon points="44,26 44,19 47,19 47,23 50,23 50,19 53,19 53,23 58,23 58,26" fill="#c9c2b2"/>
-  <rect x="18" y="18" width="28" height="40" fill="url(#gStoneCool)"/>
-  <polygon points="18,18 18,9 22,9 22,13 26,13 26,9 30,9 30,13 34,13 34,9 38,9 38,13 42,13 42,9 46,9 46,18" fill="#dfe6ee"/>
-  <path d="M26 58 v-12 a6 6 0 0 1 12 0 v12 z" fill="#4a3218"/>
-  <rect x="11" y="34" width="4.5" height="6.5" fill="#ffd76b"/>
-  <rect x="48.5" y="34" width="4.5" height="6.5" fill="#ffd76b"/>
-  <rect x="22.5" y="24" width="5.5" height="7.5" fill="#ffd76b"/>
-  <rect x="36" y="24" width="5.5" height="7.5" fill="#ffd76b"/>
-  <rect x="12.2" y="12" width="1.6" height="9" fill="#5d4526"/>
-  <polygon points="13.8,12 21,15.5 13.8,19" fill="#e64545"/>
-  <rect x="31.2" y="1" width="1.6" height="9" fill="#5d4526"/>
-  <polygon points="32.8,1 40,4.5 32.8,8" fill="#a855f7"/>
-  <rect x="50.2" y="12" width="1.6" height="9" fill="#5d4526"/>
-  <polygon points="51.8,12 59,15.5 51.8,19" fill="#e64545"/>
+  <!-- Soft radiant glow behind the whole castle -->
+  <circle cx="32" cy="32" r="32" fill="url(#gCastleGlow)"/>
+  <ellipse cx="32" cy="61" rx="30" ry="3" fill="rgba(0,0,0,0.35)"/>
+  <!-- Outer curtain wall -->
+  <rect x="2" y="46" width="60" height="13" fill="url(#gStone)"/>
+  <polygon points="2,46 2,42 6,42 6,46 12,46 12,42 16,42 16,46 48,46 48,42 52,42 52,46 58,46 58,42 62,42 62,46" fill="#c9c2b2"/>
+  <!-- Left tower -->
+  <rect x="4" y="22" width="14" height="32" fill="url(#gStone)"/>
+  <polygon points="4,22 4,16 7,16 7,19 10,19 10,16 13,16 13,19 18,19 18,22" fill="#c9c2b2"/>
+  <polygon points="3,16 19,16 11,6" fill="#a5362b"/>
+  <!-- Right tower -->
+  <rect x="46" y="22" width="14" height="32" fill="url(#gStone)"/>
+  <polygon points="46,22 46,16 49,16 49,19 52,19 52,16 55,16 55,19 60,19 60,22" fill="#c9c2b2"/>
+  <polygon points="45,16 61,16 53,6" fill="#a5362b"/>
+  <!-- Central keep -->
+  <rect x="16" y="10" width="32" height="44" fill="url(#gStoneCool)"/>
+  <polygon points="16,10 16,4 20,4 20,7 24,7 24,4 28,4 28,7 32,7 32,4 36,4 36,7 40,7 40,4 44,4 44,10" fill="#dfe6ee"/>
+  <!-- Grand gate -->
+  <path d="M25 54 v-14 a7 7 0 0 1 14 0 v14 z" fill="#3a2a16"/>
+  <path d="M25 54 v-14 a7 7 0 0 1 14 0 v14" fill="none" stroke="#20150b" stroke-width="1.2"/>
+  <!-- Glowing windows -->
+  <rect x="8" y="30" width="5.5" height="7.5" fill="#ffd76b"/>
+  <rect x="50.5" y="30" width="5.5" height="7.5" fill="#ffd76b"/>
+  <rect x="21" y="16" width="6" height="8" fill="#ffd76b"/>
+  <rect x="37" y="16" width="6" height="8" fill="#ffd76b"/>
+  <circle cx="32" cy="14" r="4" fill="#ffd76b"/>
+  <!-- Flags -->
+  <rect x="10.2" y="6" width="1.6" height="8" fill="#5d4526"/>
+  <polygon points="11.8,6 18,9 11.8,12" fill="#e64545"/>
+  <rect x="31.2" y="0" width="1.6" height="8" fill="#5d4526"/>
+  <polygon points="32.8,0 40,3.5 32.8,7" fill="#a855f7"/>
+  <rect x="52.2" y="6" width="1.6" height="8" fill="#5d4526"/>
+  <polygon points="53.8,6 60,9 53.8,12" fill="#e64545"/>
 </symbol>
 `;
 
@@ -357,6 +402,7 @@ export const SCENERY_ICONS = [
   "ic-tree-pine",
   "ic-tree-palm",
   "ic-bush",
+  "ic-boulder",
   "ic-flower-pink",
   "ic-flower-purple",
   "ic-flower-yellow",
@@ -369,6 +415,12 @@ export const CITY_ICONS = ["ic-city-a", "ic-city-b", "ic-lamppost", "ic-gate-arc
 
 /** Small, dense ground texture (grass/mushrooms/stones) scattered anywhere to fill empty ground. */
 export const GROUND_DETAIL_ICONS = ["ic-grass-tuft", "ic-mushroom", "ic-stone"] as const;
+
+/**
+ * Trees/bushes/boulders only — used to pack BOTH far margins of the map solid, every row,
+ * so the ground never reads as bald no matter which way that village's path swings.
+ */
+export const MARGIN_FILLER_ICONS = ["ic-tree-round", "ic-tree-pine", "ic-tree-palm", "ic-bush", "ic-boulder"] as const;
 
 /** A dim, blurred silhouette used sparsely far from the path for a parallax-like depth layer. */
 export const FAR_TREE_ICON = "ic-tree-far";

@@ -34,6 +34,24 @@ const state: State = {
   over: false,
 };
 
+function vibrate(pattern: number | number[]): void {
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+    // ignore (unsupported or blocked by browser policy)
+  }
+}
+
+function showScorePopup(amount: number): void {
+  const container = scoreEl.parentElement;
+  if (!container) return;
+  const popup = document.createElement("span");
+  popup.className = "score-popup";
+  popup.textContent = `+${amount}`;
+  container.appendChild(popup);
+  popup.addEventListener("animationend", () => popup.remove(), { once: true });
+}
+
 function hideOverlay(): void {
   overlayEl.hidden = true;
 }
@@ -84,14 +102,23 @@ function handleDirection(direction: Direction): void {
   state.tiles = spawnRandomTile(state.tiles);
   render();
 
+  if (result.scoreGained > 0) {
+    showScorePopup(result.scoreGained);
+    vibrate(20);
+  } else {
+    vibrate(10);
+  }
+
   if (!state.won && hasWinningTile(state.tiles)) {
     state.won = true;
-    showOverlay("2048'e ulaştın!", "Devam Et", "Yeni Oyun");
+    vibrate([30, 50, 30, 50, 60]);
+    showOverlay("2048'e ulaştın! 🎉", "Devam Et", "Yeni Oyun");
     return;
   }
 
   if (!canMove(state.tiles)) {
     state.over = true;
+    vibrate(80);
     showOverlay("Oyun bitti", "Tekrar Oyna");
   }
 }

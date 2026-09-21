@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#faf8ef" />
+    <meta name="theme-color" content="#1e1b4b" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,19 +17,37 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon.svg" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+      />
+    </noscript>
+
     <title>2048 — Mobil Oyun</title>
   </head>
   <body>
     <div id="app">
       <header class="app-header">
-        <h1 class="title">2048</h1>
+        <div class="title-group">
+          <span class="title-badge">🎮</span>
+          <h1 class="title">2048</h1>
+        </div>
         <div class="scores">
           <div class="score-box">
             <span class="label">SKOR</span>
             <span class="value" id="score">0</span>
           </div>
           <div class="score-box">
-            <span class="label">REKOR</span>
+            <span class="label">🏆 REKOR</span>
             <span class="value" id="best">0</span>
           </div>
         </div>
@@ -37,7 +55,7 @@
 
       <div class="toolbar">
         <p class="hint">Aynı sayıdaki kutucukları kaydırarak birleştir ve <strong>2048</strong>'e ulaş!</p>
-        <button id="new-game" class="btn" type="button">Yeni Oyun</button>
+        <button id="new-game" class="btn" type="button">✨ Yeni Oyun</button>
       </div>
 
       <div class="board-wrap">

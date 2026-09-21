@@ -1,18 +1,31 @@
-const BEST_SCORE_KEY = "mobile-game-2048-best-score";
+const PROGRESS_KEY = "mobile-game-2048-progress-v2";
 
-export function loadBestScore(): number {
+export interface Progress {
+  currentGate: number;
+  jokerCount: number;
+}
+
+const DEFAULT_PROGRESS: Progress = { currentGate: 1, jokerCount: 0 };
+
+export function loadProgress(): Progress {
   try {
-    const raw = localStorage.getItem(BEST_SCORE_KEY);
-    const parsed = raw ? Number(raw) : 0;
-    return Number.isFinite(parsed) ? parsed : 0;
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return { ...DEFAULT_PROGRESS };
+    const parsed = JSON.parse(raw) as Partial<Progress>;
+    const currentGate = Number(parsed.currentGate);
+    const jokerCount = Number(parsed.jokerCount);
+    return {
+      currentGate: Number.isFinite(currentGate) && currentGate >= 1 ? currentGate : 1,
+      jokerCount: Number.isFinite(jokerCount) && jokerCount >= 0 ? jokerCount : 0,
+    };
   } catch {
-    return 0;
+    return { ...DEFAULT_PROGRESS };
   }
 }
 
-export function saveBestScore(score: number): void {
+export function saveProgress(progress: Progress): void {
   try {
-    localStorage.setItem(BEST_SCORE_KEY, String(score));
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
   } catch {
     // ignore (private browsing / storage disabled)
   }

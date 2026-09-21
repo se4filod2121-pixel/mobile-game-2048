@@ -1,7 +1,11 @@
+@property --hue {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 260;
+}
+
 :root {
-  --bg-1: #4c1d95;
-  --bg-2: #1e1b4b;
-  --bg-3: #0f172a;
+  --hue: 260;
   --ink: #f4f2ff;
   --ink-dim: rgba(244, 242, 255, 0.7);
   --board-bg: rgba(255, 255, 255, 0.06);
@@ -27,13 +31,19 @@ body {
 
 body {
   background:
-    radial-gradient(circle at 15% -10%, rgba(244, 114, 182, 0.25), transparent 55%),
-    radial-gradient(circle at 100% 0%, rgba(96, 165, 250, 0.2), transparent 50%),
-    linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+    radial-gradient(circle at 15% -10%, hsla(calc(var(--hue) + 60), 85%, 70%, 0.28), transparent 55%),
+    radial-gradient(circle at 100% 0%, hsla(calc(var(--hue) - 50), 80%, 65%, 0.22), transparent 50%),
+    linear-gradient(
+      160deg,
+      hsl(var(--hue) 55% 32%) 0%,
+      hsl(calc(var(--hue) - 15) 45% 18%) 45%,
+      hsl(calc(var(--hue) - 30) 35% 9%) 100%
+    );
   background-attachment: fixed;
   color: var(--ink);
   font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overscroll-behavior: none;
+  transition: --hue 700ms ease;
 }
 
 button {
@@ -80,45 +90,72 @@ button {
   letter-spacing: 0.5px;
 }
 
-.scores {
+.chips {
   display: flex;
   gap: 8px;
 }
 
-.score-box {
-  position: relative;
+.chip {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 6px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 68px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
 }
 
-.score-box .label {
-  font-size: 0.6rem;
+.chip-joker {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(244, 114, 182, 0.25));
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.progress-row {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-labels {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
   color: var(--ink-dim);
 }
 
-.score-box .value {
-  font-family: "Baloo 2", sans-serif;
-  font-size: 1.15rem;
-  font-weight: 800;
+.progress-score {
   color: #fff;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+  transition: width 200ms ease-out;
 }
 
 .score-popup {
   position: absolute;
   top: -6px;
-  left: 50%;
-  transform: translate(-50%, 0);
+  right: 0;
   font-family: "Baloo 2", sans-serif;
   font-weight: 800;
   font-size: 0.85rem;
@@ -131,14 +168,14 @@ button {
 @keyframes score-float {
   0% {
     opacity: 0;
-    transform: translate(-50%, 6px);
+    transform: translateY(6px);
   }
   25% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -28px);
+    transform: translateY(-22px);
   }
 }
 
@@ -182,13 +219,6 @@ button {
 .btn:active {
   transform: scale(0.94);
   box-shadow: 0 3px 10px rgba(168, 85, 247, 0.35);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--ink);
-  border: 2px solid var(--glass-border);
-  box-shadow: none;
 }
 
 .board-wrap {
@@ -381,4 +411,69 @@ button {
   margin: 0;
   font-size: 0.75rem;
   color: var(--ink-dim);
+}
+
+.toast-container {
+  position: fixed;
+  top: calc(max(20px, env(safe-area-inset-top)) + 62px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.toast {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  background: rgba(15, 12, 41, 0.85);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  animation: toast-in 200ms ease-out;
+}
+
+.toast-level-up {
+  font-size: 1.05rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.9), rgba(244, 114, 182, 0.9));
+  color: #2b1608;
+}
+
+.toast-joker,
+.toast-joker-used {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(244, 114, 182, 0.9));
+}
+
+.toast-out {
+  animation: toast-out 300ms ease-in forwards;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
 }

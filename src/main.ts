@@ -1,6 +1,7 @@
 import "./style.css";
-import { canMove, createInitialTiles, hasWinningTile, move, spawnRandomTile } from "./game/engine";
-import { loadBestScore, saveBestScore } from "./game/storage";
+import { canMove, createInitialTiles, move, spawnRandomTile } from "./game/engine";
+import { TOTAL_GATES, awardsJoker, hueForLevel, levelForGate, targetForGate } from "./game/levels";
+import { loadProgress, saveProgress, type Progress } from "./game/storage";
 import type { Direction, Tile } from "./game/types";
 import { computeMetrics, renderGridBackground, renderTiles } from "./ui/render";
 import { attachInput } from "./ui/input";
@@ -8,30 +9,29 @@ import { attachInput } from "./ui/input";
 const boardEl = document.getElementById("board") as HTMLElement;
 const gridBgEl = document.getElementById("grid-bg") as HTMLElement;
 const tilesEl = document.getElementById("tiles") as HTMLElement;
-const scoreEl = document.getElementById("score") as HTMLElement;
-const bestEl = document.getElementById("best") as HTMLElement;
+const levelChipEl = document.getElementById("level-chip") as HTMLElement;
+const jokerChipEl = document.getElementById("joker-chip") as HTMLElement;
+const gateLabelEl = document.getElementById("gate-label") as HTMLElement;
+const gateScoreLabelEl = document.getElementById("gate-score-label") as HTMLElement;
+const progressFillEl = document.getElementById("progress-fill") as HTMLElement;
 const newGameBtn = document.getElementById("new-game") as HTMLButtonElement;
 const overlayEl = document.getElementById("overlay") as HTMLElement;
 const overlayMessageEl = document.getElementById("overlay-message") as HTMLElement;
 const overlayPrimaryBtn = document.getElementById("overlay-primary") as HTMLButtonElement;
-const overlaySecondaryBtn = document.getElementById("overlay-secondary") as HTMLButtonElement;
+const toastContainerEl = document.getElementById("toast-container") as HTMLElement;
 
 interface State {
   tiles: Tile[];
-  score: number;
-  best: number;
-  won: boolean;
-  keepPlaying: boolean;
+  gateScore: number;
   over: boolean;
+  progress: Progress;
 }
 
 const state: State = {
   tiles: [],
-  score: 0,
-  best: loadBestScore(),
-  won: false,
-  keepPlaying: false,
+  gateScore: 0,
   over: false,
+  progress: loadProgress(),
 };
 
 function vibrate(pattern: number | number[]): void {
@@ -42,8 +42,19 @@ function vibrate(pattern: number | number[]): void {
   }
 }
 
+function showToast(message: string, variant: string): void {
+  const el = document.createElement("div");
+  el.className = `toast toast-${variant}`;
+  el.textContent = message;
+  toastContainerEl.appendChild(el);
+  window.setTimeout(() => {
+    el.classList.add("toast-out");
+    el.addEventListener("animationend", () => el.remove(), { once: true });
+  }, 1400);
+}
+
 function showScorePopup(amount: number): void {
-  const container = scoreEl.parentElement;
+  const container = gateScoreLabelEl.parentElement;
   if (!container) return;
   const popup = document.createElement("span");
   popup.className = "score-popup";
@@ -56,49 +67,114 @@ function hideOverlay(): void {
   overlayEl.hidden = true;
 }
 
-function showOverlay(message: string, primaryLabel: string, secondaryLabel?: string): void {
+function showOverlay(message: string, primaryLabel: string): void {
   overlayMessageEl.textContent = message;
   overlayPrimaryBtn.textContent = primaryLabel;
-  if (secondaryLabel) {
-    overlaySecondaryBtn.textContent = secondaryLabel;
-    overlaySecondaryBtn.hidden = false;
-  } else {
-    overlaySecondaryBtn.hidden = true;
-  }
   overlayEl.hidden = false;
 }
 
+function applyLevelTheme(): void {
+  const level = levelForGate(state.progress.currentGate);
+  document.documentElement.style.setProperty("--hue", String(hueForLevel(level)));
+}
+
+function updateHeaderInfo(): void {
+  const gate = state.progress.currentGate;
+  const level = levelForGate(gate);
+  const target = targetForGate(gate);
+  levelChipEl.textContent = `Seviye ${level}`;
+  jokerChipEl.textContent = `🃏 ${state.progress.jokerCount}`;
+  gateLabelEl.textContent = `Kapı ${gate} / ${TOTAL_GATES}`;
+  gateScoreLabelEl.textContent = `${state.gateScore} / ${target}`;
+  progressFillEl.style.width = `${Math.min(100, (state.gateScore / target) * 100)}%`;
+}
+
 function render(): void {
-  scoreEl.textContent = String(state.score);
-  bestEl.textContent = String(state.best);
+  updateHeaderInfo();
   const metrics = computeMetrics(boardEl);
   renderTiles(tilesEl, state.tiles, metrics);
 }
 
-function startNewGame(): void {
+function startGate(): void {
   state.tiles = createInitialTiles();
-  state.score = 0;
-  state.won = false;
-  state.keepPlaying = false;
+  state.gateScore = 0;
   state.over = false;
   hideOverlay();
+  applyLevelTheme();
   render();
+}
+
+function showFinalVictory(): void {
+  vibrate([40, 60, 40, 60, 40, 60, 120]);
+  showOverlay("🏆 1000 kapıyı da tamamladın!", "Baştan Oyna");
+  state.over = true;
+}
+
+function clearGate(): void {
+  vibrate([20, 40, 20]);
+  const finishedGate = state.progress.currentGate;
+  const finishedLevel = levelForGate(finishedGate);
+  const earnedJoker = awardsJoker(finishedGate);
+  if (earnedJoker) {
+    state.progress.jokerCount += 1;
+  }
+
+  if (finishedGate >= TOTAL_GATES) {
+    saveProgress(state.progress);
+    updateHeaderInfo();
+    showFinalVictory();
+    return;
+  }
+
+  state.progress.currentGate = finishedGate + 1;
+  saveProgress(state.progress);
+  const newLevel = levelForGate(state.progress.currentGate);
+  const leveledUp = newLevel !== finishedLevel;
+
+  if (leveledUp && earnedJoker) {
+    showToast(`🎊 Seviye ${newLevel}! + 🃏 Joker kazandın!`, "level-up");
+  } else if (leveledUp) {
+    showToast(`🎊 Seviye ${newLevel}!`, "level-up");
+  } else if (earnedJoker) {
+    showToast("🃏 Joker kazandın!", "joker");
+  } else {
+    showToast(`✅ Kapı ${finishedGate} tamamlandı!`, "gate");
+  }
+
+  window.setTimeout(startGate, leveledUp ? 1100 : 700);
+}
+
+function rescueBoardWithJoker(): void {
+  const sorted = [...state.tiles].sort((a, b) => a.value - b.value);
+  const toRemove = new Set(sorted.slice(0, Math.min(2, sorted.length)).map((t) => t.id));
+  state.tiles = state.tiles.filter((t) => !toRemove.has(t.id));
+  state.tiles = spawnRandomTile(state.tiles);
+}
+
+function handleNoMoves(): void {
+  if (state.progress.jokerCount > 0) {
+    state.progress.jokerCount -= 1;
+    saveProgress(state.progress);
+    rescueBoardWithJoker();
+    vibrate([15, 30, 15, 30, 60]);
+    showToast("🃏 Joker kullanıldı, oyun devam ediyor!", "joker-used");
+    render();
+    return;
+  }
+
+  state.over = true;
+  vibrate(80);
+  showOverlay(`Kapı ${state.progress.currentGate} tamamlanamadı`, "Kapıyı Tekrar Dene");
 }
 
 function handleDirection(direction: Direction): void {
   if (state.over) return;
-  if (state.won && !state.keepPlaying) return;
 
   const result = move(state.tiles, direction);
   if (!result.moved) return;
 
   state.tiles = result.tiles;
-  state.score += result.scoreGained;
-  if (state.score > state.best) {
-    state.best = state.score;
-    saveBestScore(state.best);
-  }
-
+  state.gateScore += result.scoreGained;
   state.tiles = spawnRandomTile(state.tiles);
   render();
 
@@ -109,38 +185,30 @@ function handleDirection(direction: Direction): void {
     vibrate(10);
   }
 
-  if (!state.won && hasWinningTile(state.tiles)) {
-    state.won = true;
-    vibrate([30, 50, 30, 50, 60]);
-    showOverlay("2048'e ulaştın! 🎉", "Devam Et", "Yeni Oyun");
+  if (state.gateScore >= targetForGate(state.progress.currentGate)) {
+    clearGate();
     return;
   }
 
   if (!canMove(state.tiles)) {
-    state.over = true;
-    vibrate(80);
-    showOverlay("Oyun bitti", "Tekrar Oyna");
+    handleNoMoves();
   }
 }
 
 window.addEventListener("resize", render);
 
-newGameBtn.addEventListener("click", startNewGame);
+newGameBtn.addEventListener("click", startGate);
 
 overlayPrimaryBtn.addEventListener("click", () => {
-  if (state.won && !state.over) {
-    state.keepPlaying = true;
-    hideOverlay();
-  } else {
-    startNewGame();
+  if (state.progress.currentGate >= TOTAL_GATES && state.over) {
+    state.progress = { currentGate: 1, jokerCount: 0 };
+    saveProgress(state.progress);
   }
-});
-
-overlaySecondaryBtn.addEventListener("click", () => {
-  startNewGame();
+  startGate();
 });
 
 attachInput(boardEl, handleDirection);
 
 renderGridBackground(gridBgEl);
-startNewGame();
+applyLevelTheme();
+startGate();

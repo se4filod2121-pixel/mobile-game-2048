@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="2048" />
-    <meta name="description" content="Kaydırarak oyna: sayıları birleştir, 2048'e ulaş. Dokunmatik mobil oyun." />
+    <meta name="description" content="Kaydırarak oyna: sayıları birleştir, kapı kapı 1000 seviyeyi tamamla. Dokunmatik mobil oyun." />
 
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
@@ -41,21 +41,25 @@
           <span class="title-badge">🎮</span>
           <h1 class="title">2048</h1>
         </div>
-        <div class="scores">
-          <div class="score-box">
-            <span class="label">SKOR</span>
-            <span class="value" id="score">0</span>
-          </div>
-          <div class="score-box">
-            <span class="label">🏆 REKOR</span>
-            <span class="value" id="best">0</span>
-          </div>
+        <div class="chips">
+          <div class="chip" id="level-chip">Seviye 1</div>
+          <div class="chip chip-joker" id="joker-chip" title="Oyun bitimini engelleyen joker">🃏 0</div>
         </div>
       </header>
 
+      <div class="progress-row">
+        <div class="progress-labels">
+          <span id="gate-label">Kapı 1 / 1000</span>
+          <span class="progress-score" id="gate-score-label">0 / 160</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
       <div class="toolbar">
-        <p class="hint">Aynı sayıdaki kutucukları kaydırarak birleştir ve <strong>2048</strong>'e ulaş!</p>
-        <button id="new-game" class="btn" type="button">✨ Yeni Oyun</button>
+        <p class="hint">Aynı sayıdaki kutucukları kaydırarak birleştir, kapı hedefine ulaş!</p>
+        <button id="new-game" class="btn" type="button">🔄 Kapıyı Yenile</button>
       </div>
 
       <div class="board-wrap">
@@ -65,7 +69,6 @@
           <div class="overlay" id="overlay" hidden>
             <p class="overlay-message" id="overlay-message"></p>
             <div class="overlay-actions">
-              <button id="overlay-secondary" class="btn btn-ghost" type="button" hidden></button>
               <button id="overlay-primary" class="btn" type="button"></button>
             </div>
           </div>
@@ -76,6 +79,7 @@
         <p>Dokunarak kaydır (mobil) veya ok tuşları / WASD (masaüstü) ile oyna.</p>
       </footer>
     </div>
+    <div class="toast-container" id="toast-container"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

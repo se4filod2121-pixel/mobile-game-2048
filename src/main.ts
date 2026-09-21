@@ -1,10 +1,31 @@
 import "./style.css";
 import { canMove, createInitialTiles, move, spawnRandomTile } from "./game/engine";
-import { TOTAL_GATES, awardsJoker, hueForLevel, levelForGate, targetForGate } from "./game/levels";
+import {
+  GATES_PER_LEVEL,
+  TOTAL_GATES,
+  awardsJoker,
+  buildHouseStates,
+  gateForHouse,
+  hueForLevel,
+  levelForGate,
+  targetForGate,
+  villageIconForLevel,
+  villageNameForLevel,
+} from "./game/levels";
 import { loadProgress, saveProgress, type Progress } from "./game/storage";
 import type { Direction, Tile } from "./game/types";
 import { computeMetrics, renderGridBackground, renderTiles } from "./ui/render";
 import { attachInput } from "./ui/input";
+import { renderVillageMap } from "./ui/map";
+
+const mapScreenEl = document.getElementById("map-screen") as HTMLElement;
+const boardScreenEl = document.getElementById("board-screen") as HTMLElement;
+const villageIconEl = document.getElementById("village-icon") as HTMLElement;
+const villageNameEl = document.getElementById("village-name") as HTMLElement;
+const villageSubEl = document.getElementById("village-sub") as HTMLElement;
+const mapPathEl = document.getElementById("map-path") as HTMLElement;
+const mapSvgEl = document.getElementById("map-svg") as unknown as SVGSVGElement;
+const backToMapBtn = document.getElementById("back-to-map") as HTMLButtonElement;
 
 const boardEl = document.getElementById("board") as HTMLElement;
 const gridBgEl = document.getElementById("grid-bg") as HTMLElement;
@@ -104,6 +125,35 @@ function startGate(): void {
   render();
 }
 
+function showBoardScreen(): void {
+  mapScreenEl.hidden = true;
+  boardScreenEl.hidden = false;
+  startGate();
+}
+
+function showMapScreen(): void {
+  boardScreenEl.hidden = true;
+  mapScreenEl.hidden = false;
+  applyLevelTheme();
+
+  const level = levelForGate(state.progress.currentGate);
+  villageIconEl.textContent = villageIconForLevel(level);
+  villageNameEl.textContent = villageNameForLevel(level);
+  const firstGate = gateForHouse(level, 1);
+  const lastGate = gateForHouse(level, GATES_PER_LEVEL);
+  villageSubEl.textContent = `Seviye ${level} • Kapı ${firstGate}-${lastGate}`;
+
+  const houses = buildHouseStates(level, state.progress.currentGate);
+  const activeEl = renderVillageMap(mapPathEl, mapSvgEl, houses, (house) => {
+    if (house.status === "active") showBoardScreen();
+  });
+  if (activeEl) {
+    window.requestAnimationFrame(() => {
+      activeEl.scrollIntoView({ block: "center", behavior: "auto" });
+    });
+  }
+}
+
 function showFinalVictory(): void {
   vibrate([40, 60, 40, 60, 40, 60, 120]);
   showOverlay("🏆 1000 kapıyı da tamamladın!", "Baştan Oyna");
@@ -141,7 +191,7 @@ function clearGate(): void {
     showToast(`✅ Kapı ${finishedGate} tamamlandı!`, "gate");
   }
 
-  window.setTimeout(startGate, leveledUp ? 1100 : 700);
+  window.setTimeout(showMapScreen, leveledUp ? 1100 : 700);
 }
 
 function rescueBoardWithJoker(): void {
@@ -195,14 +245,19 @@ function handleDirection(direction: Direction): void {
   }
 }
 
-window.addEventListener("resize", render);
+window.addEventListener("resize", () => {
+  if (!boardScreenEl.hidden) render();
+});
 
 newGameBtn.addEventListener("click", startGate);
+backToMapBtn.addEventListener("click", showMapScreen);
 
 overlayPrimaryBtn.addEventListener("click", () => {
   if (state.progress.currentGate >= TOTAL_GATES && state.over) {
     state.progress = { currentGate: 1, jokerCount: 0 };
     saveProgress(state.progress);
+    showMapScreen();
+    return;
   }
   startGate();
 });
@@ -210,5 +265,4 @@ overlayPrimaryBtn.addEventListener("click", () => {
 attachInput(boardEl, handleDirection);
 
 renderGridBackground(gridBgEl);
-applyLevelTheme();
-startGate();
+showMapScreen();

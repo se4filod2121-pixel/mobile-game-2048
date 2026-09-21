@@ -1,4 +1,4 @@
-import type { HouseState, VillageOverviewEntry } from "../game/levels";
+import type { HouseStatus, JourneyNode, VillageOverviewEntry } from "../game/levels";
 
 const ROW_HEIGHT = 84;
 const TOP_PAD = 50;
@@ -15,17 +15,20 @@ const PATH_SHAPES: Array<(i: number) => number> = [
   (i) => 50 + 29 * Math.sin(i * 0.7 + 0.6), // phase-shifted weave
 ];
 
-const STATUS_ICON: Record<HouseState["status"], string> = {
+function pathVariantForLevel(level: number): number {
+  return (level - 1) % PATH_SHAPES.length;
+}
+
+const STATUS_ICON: Record<JourneyNode["status"], string> = {
   cleared: "⭐",
   active: "🏠",
   locked: "🔒",
 };
 
-const FOREST_CANOPY = ["🌳", "🌲", "🌴"];
-const FOREST_UNDERGROWTH = ["🌿", "🍃", "☘️", "🌱"];
-const CITY_EMOJI = ["🏛️", "🚪", "✨", "🏙️"];
+const BUSH_EMOJI = ["🌳", "🌲", "🌴", "🌷", "🌻"];
+const CITY_PROPS = ["🏛️", "🚪", "🏙️", "✨"];
 
-/** Small deterministic PRNG so a village's decoration looks the same every time it's rendered. */
+/** Small deterministic PRNG so the scenery looks the same on every render, not reshuffled each frame. */
 function mulberry32(seed: number): () => number {
   let a = seed | 0;
   return () => {
@@ -36,144 +39,136 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function renderScenery(container: HTMLElement, height: number, level: number, isFinal: boolean): void {
-  container.innerHTML = "";
-  container.classList.toggle("map-forest-city", isFinal);
-  container.classList.toggle("map-forest-jungle", !isFinal);
-  const rand = mulberry32(level * 7919 + 13);
-
-  if (isFinal) {
-    const count = Math.max(14, Math.round(height / 55));
-    for (let i = 0; i < count; i++) {
-      const el = document.createElement("span");
-      el.className = "scenery-item";
-      el.textContent = CITY_EMOJI[Math.floor(rand() * CITY_EMOJI.length)];
-      el.style.left = `${4 + rand() * 92}%`;
-      el.style.top = `${rand() * height}px`;
-      el.style.fontSize = `${1.1 + rand() * 1.1}rem`;
-      el.style.opacity = String(0.18 + rand() * 0.22);
-      el.style.transform = `rotate(${(rand() - 0.5) * 30}deg)`;
-      container.appendChild(el);
-    }
-    return;
+/** A smooth flowing curve through every point, built cheaply with quadratic segments to each midpoint. */
+function smoothPathD(points: Array<{ x: number; y: number }>): string {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length - 1; i++) {
+    const mx = (points[i].x + points[i + 1].x) / 2;
+    const my = (points[i].y + points[i + 1].y) / 2;
+    d += ` Q ${points[i].x} ${points[i].y} ${mx} ${my}`;
   }
-
-  // Dense multi-layer canopy: a blurred, oversized back layer for depth, then a thick
-  // mid layer of full trees, then a scattered front layer of undergrowth on top.
-  const backCount = Math.max(18, Math.round(height / 42));
-  for (let i = 0; i < backCount; i++) {
-    const el = document.createElement("span");
-    el.className = "scenery-item scenery-back";
-    el.textContent = FOREST_CANOPY[Math.floor(rand() * FOREST_CANOPY.length)];
-    el.style.left = `${rand() * 100}%`;
-    el.style.top = `${rand() * height}px`;
-    el.style.fontSize = `${2.4 + rand() * 1.6}rem`;
-    el.style.opacity = String(0.22 + rand() * 0.14);
-    el.style.transform = `rotate(${(rand() - 0.5) * 20}deg)`;
-    container.appendChild(el);
-  }
-
-  const midCount = Math.max(30, Math.round(height / 22));
-  for (let i = 0; i < midCount; i++) {
-    const el = document.createElement("span");
-    el.className = "scenery-item";
-    el.textContent = FOREST_CANOPY[Math.floor(rand() * FOREST_CANOPY.length)];
-    el.style.left = `${rand() * 100}%`;
-    el.style.top = `${rand() * height}px`;
-    el.style.fontSize = `${1.3 + rand() * 1.3}rem`;
-    el.style.opacity = String(0.32 + rand() * 0.26);
-    el.style.transform = `rotate(${(rand() - 0.5) * 30}deg)`;
-    container.appendChild(el);
-  }
-
-  const frontCount = Math.max(20, Math.round(height / 30));
-  for (let i = 0; i < frontCount; i++) {
-    const el = document.createElement("span");
-    el.className = "scenery-item";
-    el.textContent = FOREST_UNDERGROWTH[Math.floor(rand() * FOREST_UNDERGROWTH.length)];
-    el.style.left = `${rand() * 100}%`;
-    el.style.top = `${rand() * height}px`;
-    el.style.fontSize = `${0.9 + rand() * 0.9}rem`;
-    el.style.opacity = String(0.3 + rand() * 0.3);
-    el.style.transform = `rotate(${(rand() - 0.5) * 40}deg)`;
-    container.appendChild(el);
-  }
+  const last = points[points.length - 1];
+  d += ` L ${last.x} ${last.y}`;
+  return d;
 }
 
-export function renderVillageMap(
+export function renderJourney(
   forestEl: HTMLElement,
   pathEl: HTMLElement,
   svgEl: SVGSVGElement,
-  houses: HouseState[],
-  level: number,
-  pathVariant: number,
-  isFinal: boolean,
-  onSelect: (house: HouseState) => void,
+  nodes: JourneyNode[],
+  onSelect: (node: JourneyNode) => void,
 ): HTMLElement | null {
   pathEl.innerHTML = "";
+  forestEl.innerHTML = "";
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
 
-  const count = houses.length;
+  const count = nodes.length;
   const height = TOP_PAD + (count - 1) * ROW_HEIGHT + BOTTOM_PAD;
   pathEl.style.height = `${height}px`;
+  forestEl.style.height = `${height}px`;
   svgEl.setAttribute("viewBox", `0 0 100 ${height}`);
   svgEl.setAttribute("preserveAspectRatio", "none");
   svgEl.style.height = `${height}px`;
 
-  renderScenery(forestEl, height, level, isFinal);
+  const points = nodes.map((node) => ({
+    x: PATH_SHAPES[pathVariantForLevel(node.level)](node.indexInLevel - 1),
+    y: TOP_PAD + (node.gate - 1) * ROW_HEIGHT,
+  }));
 
-  const shapeFn = PATH_SHAPES[pathVariant] ?? PATH_SHAPES[0];
-  const points = houses.map((_, i) => ({ x: shapeFn(i), y: TOP_PAD + i * ROW_HEIGHT }));
+  // Groove (dark base) + bead overlay (round dashes) — a coin-chain trail without one DOM node per bead.
+  const d = smoothPathD(points);
+  const groove = document.createElementNS(SVG_NS, "path");
+  groove.setAttribute("d", d);
+  groove.setAttribute("fill", "none");
+  groove.setAttribute("stroke", "#7a5a26");
+  groove.setAttribute("stroke-width", "2.6");
+  groove.setAttribute("stroke-linecap", "round");
+  groove.setAttribute("opacity", "0.55");
+  groove.setAttribute("vector-effect", "non-scaling-stroke");
+  svgEl.appendChild(groove);
 
-  const path = document.createElementNS(SVG_NS, "path");
-  const d = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
-  path.setAttribute("d", d);
-  path.setAttribute("fill", "none");
-  path.setAttribute("stroke", "rgba(255,255,255,0.32)");
-  path.setAttribute("stroke-width", "1.4");
-  path.setAttribute("stroke-dasharray", "4 6");
-  path.setAttribute("stroke-linecap", "round");
-  path.setAttribute("vector-effect", "non-scaling-stroke");
-  svgEl.appendChild(path);
+  const beads = document.createElementNS(SVG_NS, "path");
+  beads.setAttribute("d", d);
+  beads.setAttribute("fill", "none");
+  beads.setAttribute("stroke", "#ffd76b");
+  beads.setAttribute("stroke-width", "2.6");
+  beads.setAttribute("stroke-linecap", "round");
+  beads.setAttribute("stroke-dasharray", "0.6 3.2");
+  beads.setAttribute("vector-effect", "non-scaling-stroke");
+  svgEl.appendChild(beads);
+
+  // Sparse flanking scenery: bushes/props sit beside the road, biased to the open side.
+  const rand = mulberry32(42);
+  for (let i = 0; i < count; i++) {
+    if (rand() > 0.4) continue;
+    const node = nodes[i];
+    const { x, y } = points[i];
+    const onRight = x < 50;
+    const el = document.createElement("span");
+    el.className = "scenery-item";
+    const pool = node.isFinalLevel ? CITY_PROPS : BUSH_EMOJI;
+    el.textContent = pool[Math.floor(rand() * pool.length)];
+    el.style.left = `${onRight ? 68 + rand() * 24 : 8 + rand() * 24}%`;
+    el.style.top = `${y + (rand() - 0.5) * ROW_HEIGHT * 0.7}px`;
+    el.style.fontSize = `${1.4 + rand() * 1.2}rem`;
+    el.style.transform = `rotate(${(rand() - 0.5) * 24}deg)`;
+    forestEl.appendChild(el);
+  }
 
   let activeEl: HTMLElement | null = null;
 
-  houses.forEach((house, i) => {
+  nodes.forEach((node, i) => {
     const { x, y } = points[i];
-    const node = document.createElement("button");
-    node.type = "button";
-    node.className = `house house-${house.status}`;
-    node.style.left = `${x}%`;
-    node.style.top = `${y}px`;
-    node.disabled = house.status !== "active";
+
+    if (node.isFirstOfLevel) {
+      const banner = document.createElement("div");
+      banner.className = `village-banner-marker${node.isFinalLevel ? " village-banner-marker-final" : ""}`;
+      banner.style.top = `${y - 46}px`;
+      const icon = document.createElement("span");
+      icon.textContent = node.villageIcon;
+      banner.appendChild(icon);
+      const name = document.createElement("span");
+      name.textContent = node.villageName;
+      banner.appendChild(name);
+      pathEl.appendChild(banner);
+    }
+
+    const house = document.createElement("button");
+    house.type = "button";
+    house.className = `house house-${node.status}`;
+    house.style.left = `${x}%`;
+    house.style.top = `${y}px`;
+    house.disabled = node.status !== "active";
 
     const icon = document.createElement("span");
     icon.className = "house-icon";
-    icon.textContent =
-      isFinal && house.index === houses.length && house.status !== "locked" ? "🏛️" : STATUS_ICON[house.status];
-    node.appendChild(icon);
+    icon.textContent = node.isLastGate && node.status !== "locked" ? "🏛️" : STATUS_ICON[node.status];
+    house.appendChild(icon);
 
     const label = document.createElement("span");
     label.className = "house-label";
-    label.textContent = String(house.index);
-    node.appendChild(label);
+    label.textContent = String(node.gate);
+    house.appendChild(label);
 
-    if (house.status === "active") {
+    if (node.status === "active") {
       const target = document.createElement("span");
       target.className = "house-target";
-      target.textContent = `🎯 ${house.target}`;
-      node.appendChild(target);
-      activeEl = node;
+      target.textContent = `🎯 ${node.target}`;
+      house.appendChild(target);
+      activeEl = house;
     }
 
-    node.addEventListener("click", () => onSelect(house));
-    pathEl.appendChild(node);
+    house.addEventListener("click", () => onSelect(node));
+    pathEl.appendChild(house);
   });
 
   return activeEl;
 }
 
-const VILLAGE_ROW_STATUS_BADGE: Record<HouseState["status"], string> = {
+const VILLAGE_ROW_STATUS_BADGE: Record<HouseStatus, string> = {
   cleared: "⭐",
   active: "▶️",
   locked: "🔒",

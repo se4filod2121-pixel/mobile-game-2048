@@ -303,9 +303,11 @@ button {
   overflow-y: auto;
   overflow-x: hidden;
   border-radius: 18px;
-  background: var(--board-bg);
-  border: 1px solid var(--board-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #8bc34a 0%, #7cb342 45%, #689f38 100%);
+  border: 3px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.15),
+    0 10px 24px rgba(0, 0, 0, 0.3);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -318,36 +320,54 @@ button {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-}
-
-.map-forest-jungle {
   background-image:
-    radial-gradient(circle at 15% 10%, rgba(22, 101, 52, 0.55), transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(21, 128, 61, 0.5), transparent 60%),
-    radial-gradient(circle at 45% 45%, rgba(20, 83, 45, 0.55), transparent 60%),
-    radial-gradient(circle at 10% 75%, rgba(22, 101, 52, 0.5), transparent 60%),
-    radial-gradient(circle at 85% 70%, rgba(21, 128, 61, 0.5), transparent 60%),
-    radial-gradient(circle at 55% 95%, rgba(20, 83, 45, 0.5), transparent 60%);
-  background-size: 230px 230px;
-  background-repeat: repeat;
-}
-
-.map-forest-city {
-  background-image:
-    radial-gradient(circle at 20% 15%, rgba(251, 191, 36, 0.16), transparent 55%),
-    radial-gradient(circle at 80% 30%, rgba(168, 85, 247, 0.14), transparent 55%),
-    radial-gradient(circle at 40% 75%, rgba(244, 114, 182, 0.14), transparent 55%);
-  background-size: 260px 260px;
-  background-repeat: repeat;
+    radial-gradient(circle at 22% 25%, rgba(255, 255, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 72% 55%, rgba(0, 0, 0, 0.08), transparent 45%),
+    radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.07), transparent 40%),
+    linear-gradient(180deg, transparent 0%, transparent 93%, rgba(251, 191, 36, 0.4) 100%);
+  background-size:
+    190px 190px,
+    190px 190px,
+    190px 190px,
+    100% 100%;
+  background-repeat:
+    repeat,
+    repeat,
+    repeat,
+    no-repeat;
 }
 
 .scenery-item {
   position: absolute;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  font-size: 1.4rem;
+  opacity: 0.95;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
 }
 
-.scenery-back {
-  filter: blur(1.5px) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+.village-banner-marker {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(120, 72, 22, 0.92), rgba(88, 52, 16, 0.92));
+  border: 2px solid rgba(255, 215, 107, 0.6);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #ffe9b3;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+}
+
+.village-banner-marker-final {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.92), rgba(244, 114, 182, 0.92));
+  border-color: #fff;
+  color: #fff;
 }
 
 .map-svg {
@@ -378,6 +398,8 @@ button {
   padding: 4px;
   cursor: pointer;
   color: var(--ink);
+  content-visibility: auto;
+  contain-intrinsic-size: 74px 90px;
 }
 
 .house:disabled {

@@ -4,13 +4,12 @@ import {
   GATES_PER_LEVEL,
   TOTAL_GATES,
   awardsJoker,
-  buildHouseStates,
+  buildJourney,
   buildVillageOverview,
   gateForHouse,
   hueForLevel,
   isFinalLevel,
   levelForGate,
-  pathVariantForLevel,
   targetForGate,
   villageIconForLevel,
   villageNameForLevel,
@@ -19,7 +18,7 @@ import { loadProgress, saveProgress, type Progress } from "./game/storage";
 import type { Direction, Tile } from "./game/types";
 import { computeMetrics, renderGridBackground, renderTiles } from "./ui/render";
 import { attachInput } from "./ui/input";
-import { renderVillageMap, renderVillageOverview } from "./ui/map";
+import { renderJourney, renderVillageOverview } from "./ui/map";
 
 const mapScreenEl = document.getElementById("map-screen") as HTMLElement;
 const overviewScreenEl = document.getElementById("overview-screen") as HTMLElement;
@@ -165,19 +164,10 @@ function showMapScreen(): void {
     ? `🏁 Son durak • Kapı ${firstGate}-${lastGate}`
     : `Seviye ${level} • Kapı ${firstGate}-${lastGate}`;
 
-  const houses = buildHouseStates(level, state.progress.currentGate);
-  const activeEl = renderVillageMap(
-    mapForestEl,
-    mapPathEl,
-    mapSvgEl,
-    houses,
-    level,
-    pathVariantForLevel(level),
-    isFinal,
-    (house) => {
-      if (house.status === "active") showBoardScreen();
-    },
-  );
+  const journey = buildJourney(state.progress.currentGate);
+  const activeEl = renderJourney(mapForestEl, mapPathEl, mapSvgEl, journey, (node) => {
+    if (node.status === "active") showBoardScreen();
+  });
   if (activeEl) {
     window.requestAnimationFrame(() => {
       activeEl.scrollIntoView({ block: "center", behavior: "auto" });

@@ -134,3 +134,39 @@ export function buildVillageOverview(currentGate: number): VillageOverviewEntry[
   }
   return entries;
 }
+
+export interface JourneyNode {
+  gate: number;
+  level: number;
+  indexInLevel: number;
+  status: HouseStatus;
+  target: number;
+  isFirstOfLevel: boolean;
+  isLastGate: boolean;
+  isFinalLevel: boolean;
+  villageName: string;
+  villageIcon: string;
+}
+
+/** The entire 1000-gate road, gate by gate, so the whole journey — locked stretches included — can be drawn at once. */
+export function buildJourney(currentGate: number): JourneyNode[] {
+  const nodes: JourneyNode[] = [];
+  for (let gate = 1; gate <= TOTAL_GATES; gate++) {
+    const level = levelForGate(gate);
+    const indexInLevel = gateInLevel(gate);
+    const status: HouseStatus = gate < currentGate ? "cleared" : gate === currentGate ? "active" : "locked";
+    nodes.push({
+      gate,
+      level,
+      indexInLevel,
+      status,
+      target: targetForGate(gate),
+      isFirstOfLevel: indexInLevel === 1,
+      isLastGate: gate === TOTAL_GATES,
+      isFinalLevel: isFinalLevel(level),
+      villageName: villageNameForLevel(level),
+      villageIcon: villageIconForLevel(level),
+    });
+  }
+  return nodes;
+}

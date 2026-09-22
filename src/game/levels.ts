@@ -28,6 +28,28 @@ export function awardsJoker(clearedGate: number): boolean {
   return clearedGate % JOKER_EVERY_N_GATES === 0;
 }
 
+/** Every gate on a treasure chest (except the finale, which has its own castle payoff). */
+export const TREASURE_EVERY_N_GATES = 50;
+
+export function isTreasureGate(gate: number): boolean {
+  return gate % TREASURE_EVERY_N_GATES === 0 && gate !== TOTAL_GATES;
+}
+
+/**
+ * The journey's four atmospheric regions, an exact quarter of the 1000 gates each: sunny
+ * woodland, a storm-lashed forest, a misty mountain pass, and the golden autumn approach to
+ * the City. Boundaries are gate numbers (not level numbers) so they land on a clean 25/50/75%
+ * split of the whole scrollable map, independent of how gates group into 20-gate villages.
+ */
+export type Biome = "sunny" | "storm" | "mist" | "autumn";
+
+export function biomeForGate(gate: number): Biome {
+  if (gate <= 250) return "sunny";
+  if (gate <= 500) return "storm";
+  if (gate <= 750) return "mist";
+  return "autumn";
+}
+
 const VILLAGE_PREFIXES = [
   "Ay",
   "Gün",
@@ -144,6 +166,8 @@ export interface JourneyNode {
   isFirstOfLevel: boolean;
   isLastGate: boolean;
   isFinalLevel: boolean;
+  isTreasureGate: boolean;
+  biome: Biome;
   villageName: string;
   villageIcon: string;
 }
@@ -164,6 +188,8 @@ export function buildJourney(currentGate: number): JourneyNode[] {
       isFirstOfLevel: indexInLevel === 1,
       isLastGate: gate === TOTAL_GATES,
       isFinalLevel: isFinalLevel(level),
+      isTreasureGate: isTreasureGate(gate),
+      biome: biomeForGate(gate),
       villageName: villageNameForLevel(level),
       villageIcon: villageIconForLevel(level),
     });

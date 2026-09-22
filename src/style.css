@@ -115,6 +115,11 @@ button {
   border-color: rgba(251, 191, 36, 0.4);
 }
 
+.chip-gold {
+  background: linear-gradient(135deg, rgba(255, 215, 107, 0.3), rgba(224, 163, 36, 0.22));
+  border-color: rgba(255, 215, 107, 0.45);
+}
+
 .screen {
   width: 100%;
   max-width: 420px;
@@ -203,6 +208,11 @@ button {
 
 .btn-overview:active {
   background: rgba(255, 255, 255, 0.16);
+}
+
+.btn-wheel {
+  background: linear-gradient(135deg, rgba(255, 215, 107, 0.38), rgba(244, 114, 182, 0.3));
+  border-color: rgba(255, 215, 107, 0.55);
 }
 
 .overview-header {
@@ -331,21 +341,43 @@ button {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  /* Dappled forest-floor light: soft highlight/shadow blotches at two tile scales, plus a
-     golden wash bleeding in near the City finale at the very bottom of the scroll. */
+  /* Dappled forest-floor light (highlight/shadow blotches) and a golden wash near the City
+     finale, layered on top of the four biome bands (sunny/storm/mist/autumn) — an exact
+     25/50/75% split of the road, so the ground's base color genuinely changes region to
+     region instead of one flat green from gate 1 to gate 1000. */
   background-image:
     radial-gradient(circle at 22% 25%, rgba(255, 255, 255, 0.12), transparent 42%),
     radial-gradient(circle at 72% 55%, rgba(0, 0, 0, 0.16), transparent 45%),
     radial-gradient(circle at 40% 82%, rgba(255, 255, 255, 0.08), transparent 40%),
     radial-gradient(circle at 85% 15%, rgba(0, 0, 0, 0.12), transparent 38%),
     radial-gradient(circle at 10% 60%, rgba(255, 255, 255, 0.06), transparent 36%),
-    linear-gradient(180deg, transparent 0%, transparent 93%, rgba(251, 191, 36, 0.4) 100%);
+    linear-gradient(180deg, transparent 0%, transparent 93%, rgba(251, 191, 36, 0.4) 100%),
+    linear-gradient(
+      180deg,
+      #5f9a34 0%,
+      #4f8f31 12%,
+      #3d7c28 22%,
+      #33471f 25%,
+      #38493c 32%,
+      #333d38 42%,
+      #2e3733 48%,
+      #2e2a48 50%,
+      #3a3660 60%,
+      #453a72 68%,
+      #3a3364 73%,
+      #6b3f1c 75%,
+      #9c5a1e 83%,
+      #c47a24 91%,
+      #8a4e18 97%,
+      #6b3a12 100%
+    );
   background-size:
     190px 190px,
     190px 190px,
     190px 190px,
     310px 310px,
     260px 260px,
+    100% 100%,
     100% 100%;
   background-repeat:
     repeat,
@@ -353,13 +385,20 @@ button {
     repeat,
     repeat,
     repeat,
+    no-repeat,
     no-repeat;
 }
 
 .scenery-item {
   position: absolute;
   display: block;
-  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
+  /* Biome tint (--tint, set by .scenery-biome-*) and per-layer shadow (--shadow, set by
+     .scenery-margin/-far/-ground/-reed) are separate custom properties composed into one
+     filter here — the `filter` CSS property itself doesn't merge across classes, only the
+     last one applied wins, so combining two independent effects has to go through variables. */
+  --tint: none;
+  --shadow: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
+  filter: var(--tint) var(--shadow);
   /* The dense forest walls add thousands of scenery nodes; skip layout/paint for whichever
      ones are off-screen, same trick used for the 1000 house buttons. */
   content-visibility: auto;
@@ -368,25 +407,37 @@ button {
 
 /* Both far margins packed solid with trees/bushes/boulders — the forest walls. */
 .scenery-margin {
-  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45)) brightness(0.92);
+  --shadow: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45)) brightness(0.92);
 }
 
 /* Back layer: dim, blurred silhouettes far from the path for parallax-like depth. */
 .scenery-far {
   opacity: 0.4;
-  filter: blur(1.5px) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.2));
+  --shadow: blur(1.5px) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.2));
 }
 
 /* Ground texture: small grass/mushroom/stone details, lighter shadow than foreground props. */
 .scenery-ground {
   opacity: 0.9;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+  --shadow: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Reeds growing right at a riverbank, drawn on top of the water's edge. */
 .scenery-reed {
   opacity: 0.95;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  --shadow: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* Biome palette shifts: the same tree/bush/reed art recolored per region, so nothing needs
+   a second set of art assets. */
+.scenery-biome-storm {
+  --tint: saturate(0.5) brightness(0.72);
+}
+.scenery-biome-mist {
+  --tint: hue-rotate(45deg) saturate(0.65) brightness(0.88);
+}
+.scenery-biome-autumn {
+  --tint: hue-rotate(-75deg) saturate(1.35) brightness(1.05);
 }
 
 /* A river/stream band cutting across the whole width. Sits above ground scenery (painted
@@ -397,7 +448,23 @@ button {
   left: 0;
   width: 100%;
   pointer-events: none;
-  filter: drop-shadow(0 -3px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+  --river-tint: none;
+  filter: var(--river-tint) drop-shadow(0 -3px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+
+.river-band-storm {
+  --river-tint: saturate(0.55) brightness(0.6) contrast(1.15);
+}
+.river-band-mist {
+  --river-tint: hue-rotate(30deg) saturate(0.75) brightness(0.85);
+}
+.river-band-autumn {
+  --river-tint: hue-rotate(-20deg) saturate(1.05) brightness(0.95);
+}
+
+.river-bank-shadow {
+  filter: blur(1px);
 }
 
 /* The wooden bridge deck carrying the road over a river — sits in the house layer so it
@@ -405,7 +472,223 @@ button {
 .map-bridge {
   position: absolute;
   pointer-events: none;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+/* Treasure chests dotted every 50 gates. */
+.map-chest {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 3;
+  content-visibility: auto;
+  contain-intrinsic-size: 44px 44px;
+}
+
+.map-chest-closed {
+  cursor: pointer;
+}
+
+.map-chest-closed .chest-icon {
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+  animation: chest-bob 2.2s ease-in-out infinite;
+}
+
+.map-chest-open .chest-icon {
+  filter: drop-shadow(0 0 10px rgba(255, 215, 107, 0.7)) drop-shadow(0 5px 8px rgba(0, 0, 0, 0.4));
+}
+
+@keyframes chest-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.chest-just-opened .chest-icon {
+  animation: chest-pop 500ms ease-out;
+}
+
+@keyframes chest-pop {
+  0% {
+    transform: scale(0.7) rotate(-10deg);
+  }
+  60% {
+    transform: scale(1.3) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Weather overlay: pinned to the scroll viewport (not the scrolling content) so rain/fog/
+   leaves stay on screen while the road itself scrolls past underneath. Which one is visible
+   is driven by a .biome-* class map.ts toggles on #map-scroll as the player scrolls. */
+.weather-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.weather-rain,
+.weather-fog,
+.weather-leaves {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.map-scroll.biome-storm .weather-rain {
+  opacity: 0.8;
+}
+.map-scroll.biome-mist .weather-fog {
+  opacity: 1;
+}
+.map-scroll.biome-autumn .weather-leaves {
+  opacity: 1;
+}
+
+.weather-rain {
+  background-image: repeating-linear-gradient(
+    100deg,
+    transparent 0px,
+    transparent 17px,
+    rgba(210, 225, 240, 0.55) 18px,
+    rgba(210, 225, 240, 0.55) 19px
+  );
+  background-size: 140% 140%;
+  animation: rain-fall 0.35s linear infinite;
+}
+
+@keyframes rain-fall {
+  0% {
+    background-position: 0 -40px;
+  }
+  100% {
+    background-position: -36px 40px;
+  }
+}
+
+.fog-blob {
+  position: absolute;
+  width: 220px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(230, 230, 245, 0.38);
+  filter: blur(24px);
+  animation: fog-drift 16s ease-in-out infinite alternate;
+}
+
+.fog-blob-1 {
+  top: 8%;
+  left: -10%;
+  animation-duration: 17s;
+}
+.fog-blob-2 {
+  top: 45%;
+  right: -15%;
+  animation-duration: 21s;
+  animation-delay: -4s;
+}
+.fog-blob-3 {
+  bottom: 5%;
+  left: 10%;
+  animation-duration: 19s;
+  animation-delay: -8s;
+}
+
+@keyframes fog-drift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(60px);
+  }
+}
+
+.leaf {
+  position: absolute;
+  top: -10%;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #e08a2e, #b5451d);
+  border-radius: 0 60% 0 60%;
+  opacity: 0.85;
+  animation: leaf-fall linear infinite;
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(70vh) translateX(36px) rotate(360deg);
+  }
+}
+
+.leaf:nth-child(1) {
+  left: 6%;
+  animation-duration: 9s;
+}
+.leaf:nth-child(2) {
+  left: 16%;
+  animation-duration: 11s;
+  animation-delay: -2s;
+  background: linear-gradient(135deg, #d9a441, #a8471d);
+}
+.leaf:nth-child(3) {
+  left: 28%;
+  animation-duration: 8s;
+  animation-delay: -5s;
+}
+.leaf:nth-child(4) {
+  left: 40%;
+  animation-duration: 12s;
+  animation-delay: -1s;
+  background: linear-gradient(135deg, #e08a2e, #7a2f12);
+}
+.leaf:nth-child(5) {
+  left: 52%;
+  animation-duration: 10s;
+  animation-delay: -6s;
+}
+.leaf:nth-child(6) {
+  left: 63%;
+  animation-duration: 9.5s;
+  animation-delay: -3s;
+  background: linear-gradient(135deg, #d9a441, #a8471d);
+}
+.leaf:nth-child(7) {
+  left: 74%;
+  animation-duration: 11.5s;
+  animation-delay: -7s;
+}
+.leaf:nth-child(8) {
+  left: 84%;
+  animation-duration: 8.5s;
+  animation-delay: -2.5s;
+  background: linear-gradient(135deg, #e08a2e, #7a2f12);
+}
+.leaf:nth-child(9) {
+  left: 92%;
+  animation-duration: 10.5s;
+  animation-delay: -4.5s;
+}
+.leaf:nth-child(10) {
+  left: 48%;
+  animation-duration: 13s;
+  animation-delay: -8.5s;
+  background: linear-gradient(135deg, #d9a441, #a8471d);
 }
 
 .village-banner-marker {
@@ -673,9 +956,22 @@ button {
   width: 100%;
   max-width: 420px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-actions .btn {
+  flex: 1;
+}
+
+.btn-undo {
+  background: linear-gradient(135deg, #64748b, #334155);
+  box-shadow: 0 6px 16px rgba(51, 65, 85, 0.4);
 }
 
 .hint {
@@ -709,6 +1005,13 @@ button {
 .btn:active {
   transform: scale(0.94);
   box-shadow: 0 3px 10px rgba(168, 85, 247, 0.35);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
 }
 
 .board-wrap {
@@ -966,4 +1269,136 @@ button {
     opacity: 0;
     transform: translateY(-12px);
   }
+}
+
+/* Lucky Wheel modal */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 20, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.wheel-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: linear-gradient(160deg, #2a1b4a, #1a1030);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  padding: 26px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.wheel-modal-card h2 {
+  margin: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.wheel-status {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffe9b3;
+  text-align: center;
+  min-height: 1.4em;
+}
+
+.wheel-wrap {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-disc {
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  border: 6px solid #ffd76b;
+  position: relative;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.2);
+  transition: transform 3.2s cubic-bezier(0.17, 0.67, 0.16, 0.99);
+}
+
+.wheel-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 0.76rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+  color: #fff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  z-index: 2;
+}
+
+.wheel-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3c4, #e0a324);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+  z-index: 2;
+}
+
+.wheel-modal-card .btn {
+  width: 100%;
 }

@@ -81,9 +81,18 @@ const SYMBOL_MARKUP = `
     <stop offset="100%" stop-color="#1c6f9c"/>
   </linearGradient>
   <linearGradient id="gPlank" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#c58f52"/>
-    <stop offset="100%" stop-color="#96632f"/>
+    <stop offset="0%" stop-color="#dba764"/>
+    <stop offset="45%" stop-color="#c58f52"/>
+    <stop offset="100%" stop-color="#7c5228"/>
   </linearGradient>
+  <linearGradient id="gChestWood" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#c58f52"/>
+    <stop offset="100%" stop-color="#8a5a2e"/>
+  </linearGradient>
+  <radialGradient id="gChestGlow" cx="50%" cy="45%" r="60%">
+    <stop offset="0%" stop-color="#fff3c4" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#fff3c4" stop-opacity="0"/>
+  </radialGradient>
 </defs>
 
 <symbol id="ic-tree-round" viewBox="0 0 64 64">
@@ -402,27 +411,74 @@ const SYMBOL_MARKUP = `
 </symbol>
 
 <symbol id="ic-bridge-wood" viewBox="0 0 40 100">
-  <rect x="5" y="0" width="30" height="100" fill="url(#gPlank)"/>
-  <g stroke="#6b4423" stroke-width="1.6" opacity="0.7">
-    <line x1="5" y1="9" x2="35" y2="9"/>
-    <line x1="5" y1="20" x2="35" y2="20"/>
-    <line x1="5" y1="31" x2="35" y2="31"/>
-    <line x1="5" y1="42" x2="35" y2="42"/>
-    <line x1="5" y1="53" x2="35" y2="53"/>
-    <line x1="5" y1="64" x2="35" y2="64"/>
-    <line x1="5" y1="75" x2="35" y2="75"/>
-    <line x1="5" y1="86" x2="35" y2="86"/>
+  <!-- Cast shadow on the water, wider than the deck, implying real height above it. -->
+  <ellipse cx="20" cy="94" rx="17" ry="5" fill="rgba(0,0,0,0.4)"/>
+  <ellipse cx="20" cy="6" rx="17" ry="5" fill="rgba(0,0,0,0.28)"/>
+  <!-- Angled stone piers at both banks so the deck reads as rising off the ground, not flat. -->
+  <polygon points="7,90 33,90 29,100 11,100" fill="#8b8478"/>
+  <polygon points="7,10 33,10 29,0 11,0" fill="#8b8478"/>
+  <polygon points="7,90 33,90 29,100 11,100" fill="none" stroke="#635d52" stroke-width="1"/>
+  <!-- Deck, beveled: a light plank fill, a darker seam under each board, a thin highlight
+       above it — the ridge/groove pairing is what reads as "raised" rather than a flat line. -->
+  <rect x="4" y="8" width="32" height="84" fill="url(#gPlank)"/>
+  <g stroke="#5d3a1a" stroke-width="1.8" opacity="0.8">
+    <line x1="4" y1="17" x2="36" y2="17"/>
+    <line x1="4" y1="27" x2="36" y2="27"/>
+    <line x1="4" y1="37" x2="36" y2="37"/>
+    <line x1="4" y1="47" x2="36" y2="47"/>
+    <line x1="4" y1="57" x2="36" y2="57"/>
+    <line x1="4" y1="67" x2="36" y2="67"/>
+    <line x1="4" y1="77" x2="36" y2="77"/>
+    <line x1="4" y1="87" x2="36" y2="87"/>
   </g>
-  <rect x="0" y="0" width="6" height="100" fill="#8a6a45"/>
-  <rect x="34" y="0" width="6" height="100" fill="#8a6a45"/>
+  <g stroke="#f1cf9c" stroke-width="1" opacity="0.6">
+    <line x1="4" y1="15.4" x2="36" y2="15.4"/>
+    <line x1="4" y1="25.4" x2="36" y2="25.4"/>
+    <line x1="4" y1="35.4" x2="36" y2="35.4"/>
+    <line x1="4" y1="45.4" x2="36" y2="45.4"/>
+    <line x1="4" y1="55.4" x2="36" y2="55.4"/>
+    <line x1="4" y1="65.4" x2="36" y2="65.4"/>
+    <line x1="4" y1="75.4" x2="36" y2="75.4"/>
+  </g>
+  <rect x="4" y="8" width="32" height="84" fill="none" stroke="#4a2e14" stroke-width="1.2"/>
+  <!-- Raised rope-rails: left rail lit, right rail shaded, for a subtle 3D roundness. -->
+  <rect x="0" y="4" width="7" height="92" rx="2" fill="#9a7a54"/>
+  <rect x="33" y="4" width="7" height="92" rx="2" fill="#6b4a2d"/>
+  <line x1="3" y1="4" x2="3" y2="96" stroke="#c9a878" stroke-width="1.4" opacity="0.7"/>
+  <line x1="37" y1="4" x2="37" y2="96" stroke="#3f2a12" stroke-width="1.4" opacity="0.6"/>
   <g fill="#5d4526">
-    <rect x="0" y="2" width="6" height="9" rx="1.5"/>
-    <rect x="0" y="45.5" width="6" height="9" rx="1.5"/>
-    <rect x="0" y="89" width="6" height="9" rx="1.5"/>
-    <rect x="34" y="2" width="6" height="9" rx="1.5"/>
-    <rect x="34" y="45.5" width="6" height="9" rx="1.5"/>
-    <rect x="34" y="89" width="6" height="9" rx="1.5"/>
+    <rect x="0" y="6" width="7" height="9" rx="1.5"/>
+    <rect x="0" y="45.5" width="7" height="9" rx="1.5"/>
+    <rect x="0" y="85" width="7" height="9" rx="1.5"/>
+    <rect x="33" y="6" width="7" height="9" rx="1.5"/>
+    <rect x="33" y="45.5" width="7" height="9" rx="1.5"/>
+    <rect x="33" y="85" width="7" height="9" rx="1.5"/>
   </g>
+</symbol>
+
+<symbol id="ic-chest-closed" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="54" rx="20" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="12" y="30" width="40" height="22" rx="3" fill="url(#gChestWood)"/>
+  <path d="M12 30 C 12 16 52 16 52 30 Z" fill="url(#gChestWood)"/>
+  <path d="M12 30 C 12 16 52 16 52 30" fill="none" stroke="#5d3a1a" stroke-width="1.6"/>
+  <rect x="12" y="28" width="40" height="5" fill="#e0a324"/>
+  <rect x="12" y="49" width="40" height="5" fill="#e0a324"/>
+  <rect x="27" y="28" width="10" height="24" fill="#e0a324"/>
+  <circle cx="32" cy="38" r="5" fill="#3f4650" stroke="#ffd76b" stroke-width="1.4"/>
+  <rect x="30" y="37" width="4" height="6" rx="1" fill="#ffd76b"/>
+</symbol>
+
+<symbol id="ic-chest-open" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="54" rx="20" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <circle cx="32" cy="26" r="26" fill="url(#gChestGlow)"/>
+  <rect x="12" y="30" width="40" height="22" rx="3" fill="url(#gChestWood)"/>
+  <rect x="12" y="28" width="40" height="5" fill="#e0a324"/>
+  <rect x="27" y="30" width="10" height="22" fill="#e0a324"/>
+  <path d="M13 26 C 13 10 30 -2 30 14 L 14 26 Z" fill="url(#gChestWood)" stroke="#5d3a1a" stroke-width="1.4"/>
+  <circle cx="20" cy="10" r="2.4" fill="#fff3c4"/>
+  <circle cx="30" cy="4" r="1.8" fill="#fff3c4"/>
+  <circle cx="40" cy="9" r="2" fill="#fff3c4"/>
+  <path d="M32 32 l3 -6 l3 6 l-3 6 z" fill="#ffd76b"/>
 </symbol>
 `;
 
@@ -485,6 +541,10 @@ export const LOCK_OVERLAY_ICON = "ic-padlock-badge";
 
 /** Tall wooden plank bridge, crossing a river band where the road passes over it. */
 export const BRIDGE_ICON = "ic-bridge-wood";
+
+/** Treasure chest markers dotted along the path, swapping art once opened. */
+export const CHEST_ICON_CLOSED = "ic-chest-closed";
+export const CHEST_ICON_OPEN = "ic-chest-open";
 
 export function makeIconUse(symbolId: string, sizePx: number, className: string): SVGSVGElement {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

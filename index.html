@@ -42,6 +42,7 @@
           <h1 class="title">2048</h1>
         </div>
         <div class="chips">
+          <div class="chip chip-gold" id="gold-chip" title="Altın">🪙 0</div>
           <div class="chip chip-joker" id="joker-chip" title="Oyun bitimini engelleyen joker">🃏 0</div>
         </div>
       </header>
@@ -53,14 +54,43 @@
             <h2 id="village-name">Ay Köyü</h2>
             <p id="village-sub">Seviye 1 • Kapı 1-20</p>
           </div>
+          <button id="open-wheel" class="btn-overview btn-wheel" type="button" title="Şans Çarkı">🎡</button>
           <button id="open-overview" class="btn-overview" type="button" title="Tüm köyleri gör">🗺️</button>
         </div>
         <div class="map-scroll" id="map-scroll">
           <div id="map-forest" class="map-forest"></div>
           <svg id="map-svg" class="map-svg"></svg>
           <div id="map-path" class="map-path"></div>
+          <div id="weather-fx" class="weather-fx" aria-hidden="true">
+            <div class="weather-rain"></div>
+            <div class="weather-fog">
+              <span class="fog-blob fog-blob-1"></span>
+              <span class="fog-blob fog-blob-2"></span>
+              <span class="fog-blob fog-blob-3"></span>
+            </div>
+            <div class="weather-leaves">
+              <span class="leaf"></span><span class="leaf"></span><span class="leaf"></span>
+              <span class="leaf"></span><span class="leaf"></span><span class="leaf"></span>
+              <span class="leaf"></span><span class="leaf"></span><span class="leaf"></span>
+              <span class="leaf"></span>
+            </div>
+          </div>
         </div>
       </section>
+
+      <div id="wheel-modal" class="modal-backdrop" hidden>
+        <div class="wheel-modal-card">
+          <button id="close-wheel" class="modal-close" type="button">✕</button>
+          <h2>🎡 Şans Çarkı</h2>
+          <p class="wheel-status" id="wheel-status">Günlük ücretsiz çevirişin hazır!</p>
+          <div class="wheel-wrap">
+            <div class="wheel-pointer">▼</div>
+            <div class="wheel-disc" id="wheel-disc"></div>
+            <div class="wheel-hub">🎁</div>
+          </div>
+          <button id="spin-wheel" class="btn btn-primary" type="button">Çevir!</button>
+        </div>
+      </div>
 
       <section id="overview-screen" class="screen" hidden>
         <div class="overview-header">
@@ -88,7 +118,10 @@
 
         <div class="toolbar">
           <p class="hint">Aynı sayıdaki kutucukları kaydırarak birleştir, kapı hedefine ulaş!</p>
-          <button id="new-game" class="btn" type="button">🔄 Kapıyı Yenile</button>
+          <div class="toolbar-actions">
+            <button id="undo-move" class="btn btn-undo" type="button" disabled>↩️ Geri Al (0)</button>
+            <button id="new-game" class="btn" type="button">🔄 Kapıyı Yenile</button>
+          </div>
         </div>
 
         <div class="board-wrap">

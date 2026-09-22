@@ -29,6 +29,7 @@ import {
   CITY_ICONS,
   FAR_TREE_ICON,
   GROUND_DETAIL_ICONS,
+  LOCK_OVERLAY_ICON,
   MARGIN_FILLER_ICONS,
   SCENERY_ICONS,
   ensureIconDefs,
@@ -234,9 +235,15 @@ export function renderJourney(
 
     const icon = document.createElement("span");
     icon.className = "house-icon";
-    const badgeId = isBigFinale && node.status !== "locked" ? BADGE_ICON.final : BADGE_ICON[node.status];
+    // The castle always renders as a castle, even locked — a padlock medallion overlays it
+    // instead of falling back to the generic locked-cottage badge, so gate 1000 never looks
+    // like just another house on the road.
+    const badgeId = isBigFinale ? BADGE_ICON.final : BADGE_ICON[node.status];
     const badgeSize = isBigFinale ? FINAL_BADGE_SIZE : REGULAR_BADGE_SIZE;
     icon.appendChild(makeIconUse(badgeId, badgeSize, "house-badge"));
+    if (isBigFinale && node.status === "locked") {
+      icon.appendChild(makeIconUse(LOCK_OVERLAY_ICON, Math.round(badgeSize * 0.4), "house-lock-overlay"));
+    }
     house.appendChild(icon);
 
     const label = document.createElement("span");

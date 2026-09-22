@@ -380,6 +380,13 @@ const SYMBOL_MARKUP = `
   <rect x="52.2" y="6" width="1.6" height="8" fill="#5d4526"/>
   <polygon points="53.8,6 60,9 53.8,12" fill="#e64545"/>
 </symbol>
+
+<symbol id="ic-padlock-badge" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="23" fill="#3f4650" stroke="#e8e8ec" stroke-width="3"/>
+  <rect x="21" y="28" width="22" height="19" rx="3" fill="#c8ccd2"/>
+  <path d="M24 28 v-7.5 a8 8 0 0 1 16 0 v7.5" fill="none" stroke="#c8ccd2" stroke-width="4.2"/>
+  <circle cx="32" cy="36" r="3.4" fill="#3f4650"/>
+</symbol>
 `;
 
 let injected = false;
@@ -431,6 +438,10 @@ export const BADGE_ICON: Record<"locked" | "active" | "cleared" | "final", strin
   cleared: "bdg-cleared",
   final: "bdg-final",
 };
+
+/** Small padlock medallion overlaid on the still-locked castle so it reads as "locked castle",
+ * not a generic locked cottage — the finale should never look like just another house. */
+export const LOCK_OVERLAY_ICON = "ic-padlock-badge";
 
 export function makeIconUse(symbolId: string, sizePx: number, className: string): SVGSVGElement {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

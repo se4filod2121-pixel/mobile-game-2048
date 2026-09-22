@@ -461,6 +461,7 @@ button {
 }
 
 .house-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -475,6 +476,21 @@ button {
 
 .house-locked .house-badge {
   opacity: 0.68;
+}
+
+/* Still a castle silhouette while locked — just dimmed to greyscale, with a padlock
+   medallion on top, instead of falling back to a generic locked-cottage look. */
+.house-finale.house-locked .house-badge {
+  opacity: 0.85;
+  filter: grayscale(0.85) brightness(0.72) drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.house-lock-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
 }
 
 /* Gate 1000: a massive, majestic castle — deliberately far bigger than any cottage so it

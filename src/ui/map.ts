@@ -26,14 +26,17 @@
 import type { HouseStatus, JourneyNode, VillageOverviewEntry } from "../game/levels";
 import {
   BADGE_ICON,
+  BRIDGE_ICON,
   CITY_ICONS,
   FAR_TREE_ICON,
   GROUND_DETAIL_ICONS,
   LOCK_OVERLAY_ICON,
   MARGIN_FILLER_ICONS,
+  REED_ICON,
   SCENERY_ICONS,
   ensureIconDefs,
   makeIconUse,
+  makeIconUseSized,
 } from "./icons";
 
 /** The gate-1000 badge renders far larger than a regular cottage — the journey's payoff. */
@@ -109,6 +112,29 @@ export function renderJourney(
     x: PATH_SHAPES[pathVariantForLevel(node.level)](node.indexInLevel - 1),
     y: TOP_PAD + (node.gate - 1) * ROW_HEIGHT,
   }));
+
+  // A handful of villages have a river cutting across the whole width, roughly mid-village
+  // so it never collides with a banner or the castle. The road itself is never interrupted —
+  // it flows straight through; a wooden bridge (added in the house layer, below) is what
+  // actually carries it over the water at each crossing.
+  type RiverZone = { top: number; height: number; x: number; y: number; crossIndex: number };
+  const riverZones: RiverZone[] = [];
+  {
+    const riverRand = mulberry32(777);
+    let lastRiverLevel = -10;
+    for (let i = 0; i < count - 1; i++) {
+      const node = nodes[i];
+      if (node.isFinalLevel || node.level < 2 || node.level === lastRiverLevel) continue;
+      if (node.indexInLevel !== 8) continue;
+      if (riverRand() >= 0.42) continue;
+      const midY = (points[i].y + points[i + 1].y) / 2;
+      const midX = (points[i].x + points[i + 1].x) / 2;
+      const bandHeight = 70 + riverRand() * 24;
+      riverZones.push({ top: midY - bandHeight / 2, height: bandHeight, x: midX, y: midY, crossIndex: i });
+      lastRiverLevel = node.level;
+    }
+  }
+  const riverByCrossIndex = new Map(riverZones.map((zone) => [zone.crossIndex, zone]));
 
   // Groove (dark earth trench) + a real dirt-brown overlay — a thick, raised path (the
   // .map-svg drop-shadow filter in style.css does the actual 3D "lifted off the ground" lift).
@@ -203,10 +229,57 @@ export function renderJourney(
     forestEl.appendChild(el);
   }
 
+  // Rivers: rendered last so they visually cover any ground/margin scenery underneath at
+  // that band, giving the water a clean edge instead of trees poking up through it.
+  const RIVER_WAVE_D =
+    "M0,18 Q12.5,4 25,18 T50,18 T75,18 T100,18 L100,82 Q87.5,96 75,82 T50,82 T25,82 T0,82 Z";
+  for (const zone of riverZones) {
+    const river = document.createElementNS(SVG_NS, "svg") as unknown as SVGSVGElement;
+    river.setAttribute("viewBox", "0 0 100 100");
+    river.setAttribute("preserveAspectRatio", "none");
+    river.setAttribute("class", "river-band");
+    river.style.top = `${zone.top}px`;
+    river.style.height = `${zone.height}px`;
+    const water = document.createElementNS(SVG_NS, "path");
+    water.setAttribute("d", RIVER_WAVE_D);
+    water.setAttribute("fill", "url(#gRiver)");
+    river.appendChild(water);
+    const shine = document.createElementNS(SVG_NS, "path");
+    shine.setAttribute("d", "M4,50 Q25,38 50,50 T96,50");
+    shine.setAttribute("fill", "none");
+    shine.setAttribute("stroke", "#eaffff");
+    shine.setAttribute("stroke-width", "1.6");
+    shine.setAttribute("opacity", "0.4");
+    shine.setAttribute("vector-effect", "non-scaling-stroke");
+    river.appendChild(shine);
+    forestEl.appendChild(river);
+
+    // A few reeds along both banks; skip the stretch right around the bridge crossing.
+    for (let k = 0; k < 8; k++) {
+      const onTop = k % 2 === 0;
+      const rx = 4 + rand() * 92;
+      if (Math.abs(rx - zone.x) < 10) continue;
+      const reed = makeIconUse(REED_ICON, Math.round(26 + rand() * 14), "scenery-item scenery-reed");
+      reed.style.left = `${rx}%`;
+      reed.style.top = `${onTop ? zone.top + 6 : zone.top + zone.height - 6}px`;
+      reed.style.transform = `translate(-50%, -70%) rotate(${(rand() - 0.5) * 12}deg)`;
+      forestEl.appendChild(reed);
+    }
+  }
+
   let activeEl: HTMLElement | null = null;
 
   nodes.forEach((node, i) => {
     const { x, y } = points[i];
+
+    const riverZone = riverByCrossIndex.get(i);
+    if (riverZone) {
+      const bridge = makeIconUseSized(BRIDGE_ICON, "0 0 40 100", 30, riverZone.height + 26, "map-bridge");
+      bridge.style.left = `${riverZone.x}%`;
+      bridge.style.top = `${riverZone.y}px`;
+      bridge.style.transform = "translate(-50%, -50%)";
+      pathEl.appendChild(bridge);
+    }
 
     if (node.isFirstOfLevel) {
       // Village name sits to whichever side the path isn't on at this row, so it never

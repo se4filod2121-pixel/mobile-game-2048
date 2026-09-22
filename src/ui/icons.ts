@@ -75,6 +75,15 @@ const SYMBOL_MARKUP = `
     <stop offset="60%" stop-color="#ffd76b" stop-opacity="0.35"/>
     <stop offset="100%" stop-color="#ffd76b" stop-opacity="0"/>
   </radialGradient>
+  <linearGradient id="gRiver" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8fdcf0"/>
+    <stop offset="45%" stop-color="#3fa9d8"/>
+    <stop offset="100%" stop-color="#1c6f9c"/>
+  </linearGradient>
+  <linearGradient id="gPlank" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#c58f52"/>
+    <stop offset="100%" stop-color="#96632f"/>
+  </linearGradient>
 </defs>
 
 <symbol id="ic-tree-round" viewBox="0 0 64 64">
@@ -94,18 +103,6 @@ const SYMBOL_MARKUP = `
   <polygon points="32,18 50,40 14,40" fill="url(#gPine)"/>
   <polygon points="32,30 52,52 12,52" fill="url(#gPine)"/>
   <polygon points="32,6 32,52 17,30" fill="#ffffff" opacity="0.12"/>
-</symbol>
-
-<symbol id="ic-tree-palm" viewBox="0 0 64 64">
-  <ellipse cx="34" cy="59" rx="14" ry="3.5" fill="rgba(0,0,0,0.25)"/>
-  <path d="M32 58 C 30 40 34 26 40 14" fill="none" stroke="url(#gTrunk)" stroke-width="5" stroke-linecap="round"/>
-  <g fill="url(#gCanopy)">
-    <path d="M40 14 C 30 10 18 12 10 20 C 22 20 32 18 40 14 Z"/>
-    <path d="M40 14 C 34 4 22 -2 10 0 C 20 8 30 12 40 14 Z"/>
-    <path d="M40 14 C 44 4 56 0 66 4 C 56 10 47 12 40 14 Z"/>
-    <path d="M40 14 C 48 10 58 12 64 20 C 54 18 46 16 40 14 Z"/>
-    <path d="M40 14 C 38 22 38 30 42 36 C 46 28 44 20 40 14 Z"/>
-  </g>
 </symbol>
 
 <symbol id="ic-bush" viewBox="0 0 64 64">
@@ -295,17 +292,23 @@ const SYMBOL_MARKUP = `
 </symbol>
 
 <symbol id="bdg-locked" viewBox="0 0 64 64">
+  <!-- A real cute cottage, just desaturated — not a shield/badge shape — with a small,
+       modern padlock chip tucked in the corner instead of a giant medallion covering it. -->
   <ellipse cx="32" cy="58" rx="19" ry="3.6" fill="rgba(0,0,0,0.22)"/>
-  <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#6f695d"/>
+  <rect x="16" y="34" width="9" height="6" rx="1.5" fill="#8f8a7d"/>
   <rect x="14" y="34" width="36" height="22" rx="2" fill="url(#gCottageWallLocked)"/>
   <polygon points="10,34 32,14 54,34" fill="url(#gCottageRoofLocked)"/>
-  <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#463f36"/>
-  <rect x="16" y="42" width="8" height="8" rx="1" fill="#4a453d"/>
-  <rect x="40" y="42" width="8" height="8" rx="1" fill="#4a453d"/>
-  <circle cx="32" cy="49" r="12" fill="#3f4650" stroke="#e8e8ec" stroke-width="2"/>
-  <rect x="27" y="47" width="10" height="8" rx="2" fill="#c8ccd2"/>
-  <path d="M28.5 47 v-3.2 a3.5 3.5 0 0 1 7 0 v3.2" fill="none" stroke="#c8ccd2" stroke-width="2.2"/>
-  <circle cx="32" cy="50.5" r="1.6" fill="#3f4650"/>
+  <rect x="27" y="42" width="10" height="14" rx="1.5" fill="#544e44"/>
+  <path d="M32 42 A5 6 0 0 1 37 48" fill="none" stroke="#3d382f" stroke-width="1.2"/>
+  <rect x="12.5" y="42" width="2.6" height="8" rx="0.6" fill="#7c7669"/>
+  <rect x="25" y="42" width="2.6" height="8" rx="0.6" fill="#7c7669"/>
+  <rect x="16" y="42" width="8" height="8" rx="1.5" fill="#9a9488"/>
+  <rect x="36.5" y="42" width="2.6" height="8" rx="0.6" fill="#7c7669"/>
+  <rect x="49" y="42" width="2.6" height="8" rx="0.6" fill="#7c7669"/>
+  <rect x="40" y="42" width="8" height="8" rx="1.5" fill="#9a9488"/>
+  <circle cx="48" cy="19" r="7.5" fill="#3f4650" stroke="#fff" stroke-width="1.5"/>
+  <rect x="44.8" y="17.6" width="6.4" height="5.2" rx="1.2" fill="#e8e8ec"/>
+  <path d="M45.7 17.6 v-2.2 a2.3 2.3 0 0 1 4.6 0 v2.2" fill="none" stroke="#e8e8ec" stroke-width="1.3"/>
 </symbol>
 
 <symbol id="bdg-active" viewBox="0 0 64 64">
@@ -387,6 +390,40 @@ const SYMBOL_MARKUP = `
   <path d="M24 28 v-7.5 a8 8 0 0 1 16 0 v7.5" fill="none" stroke="#c8ccd2" stroke-width="4.2"/>
   <circle cx="32" cy="36" r="3.4" fill="#3f4650"/>
 </symbol>
+
+<symbol id="ic-reed" viewBox="0 0 64 64">
+  <g stroke="#3f7d32" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M22 60 C 20 44 26 34 24 18"/>
+    <path d="M32 60 C 32 42 30 30 32 12"/>
+    <path d="M42 60 C 44 44 38 34 40 18"/>
+  </g>
+  <ellipse cx="32" cy="12" rx="3" ry="8" fill="#8a5a2e"/>
+  <ellipse cx="24" cy="18" rx="2.4" ry="6.4" fill="#8a5a2e"/>
+</symbol>
+
+<symbol id="ic-bridge-wood" viewBox="0 0 40 100">
+  <rect x="5" y="0" width="30" height="100" fill="url(#gPlank)"/>
+  <g stroke="#6b4423" stroke-width="1.6" opacity="0.7">
+    <line x1="5" y1="9" x2="35" y2="9"/>
+    <line x1="5" y1="20" x2="35" y2="20"/>
+    <line x1="5" y1="31" x2="35" y2="31"/>
+    <line x1="5" y1="42" x2="35" y2="42"/>
+    <line x1="5" y1="53" x2="35" y2="53"/>
+    <line x1="5" y1="64" x2="35" y2="64"/>
+    <line x1="5" y1="75" x2="35" y2="75"/>
+    <line x1="5" y1="86" x2="35" y2="86"/>
+  </g>
+  <rect x="0" y="0" width="6" height="100" fill="#8a6a45"/>
+  <rect x="34" y="0" width="6" height="100" fill="#8a6a45"/>
+  <g fill="#5d4526">
+    <rect x="0" y="2" width="6" height="9" rx="1.5"/>
+    <rect x="0" y="45.5" width="6" height="9" rx="1.5"/>
+    <rect x="0" y="89" width="6" height="9" rx="1.5"/>
+    <rect x="34" y="2" width="6" height="9" rx="1.5"/>
+    <rect x="34" y="45.5" width="6" height="9" rx="1.5"/>
+    <rect x="34" y="89" width="6" height="9" rx="1.5"/>
+  </g>
+</symbol>
 `;
 
 let injected = false;
@@ -407,7 +444,6 @@ export function ensureIconDefs(): void {
 export const SCENERY_ICONS = [
   "ic-tree-round",
   "ic-tree-pine",
-  "ic-tree-palm",
   "ic-bush",
   "ic-boulder",
   "ic-flower-pink",
@@ -424,10 +460,14 @@ export const CITY_ICONS = ["ic-city-a", "ic-city-b", "ic-lamppost", "ic-gate-arc
 export const GROUND_DETAIL_ICONS = ["ic-grass-tuft", "ic-mushroom", "ic-stone"] as const;
 
 /**
- * Trees/bushes/boulders only — used to pack BOTH far margins of the map solid, every row,
- * so the ground never reads as bald no matter which way that village's path swings.
+ * Trees/bushes/boulders only (no palms — a consistent pine/oak forest top to bottom) — used
+ * to pack BOTH far margins of the map solid, every row, so the ground never reads as bald no
+ * matter which way that village's path swings.
  */
-export const MARGIN_FILLER_ICONS = ["ic-tree-round", "ic-tree-pine", "ic-tree-palm", "ic-bush", "ic-boulder"] as const;
+export const MARGIN_FILLER_ICONS = ["ic-tree-round", "ic-tree-pine", "ic-bush", "ic-boulder"] as const;
+
+/** Reeds/water-edge plants scattered along river banks. */
+export const REED_ICON = "ic-reed";
 
 /** A dim, blurred silhouette used sparsely far from the path for a parallax-like depth layer. */
 export const FAR_TREE_ICON = "ic-tree-far";
@@ -443,11 +483,34 @@ export const BADGE_ICON: Record<"locked" | "active" | "cleared" | "final", strin
  * not a generic locked cottage — the finale should never look like just another house. */
 export const LOCK_OVERLAY_ICON = "ic-padlock-badge";
 
+/** Tall wooden plank bridge, crossing a river band where the road passes over it. */
+export const BRIDGE_ICON = "ic-bridge-wood";
+
 export function makeIconUse(symbolId: string, sizePx: number, className: string): SVGSVGElement {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 64 64");
   svg.setAttribute("width", String(sizePx));
   svg.setAttribute("height", String(sizePx));
+  svg.setAttribute("class", className);
+  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  use.setAttribute("href", `#${symbolId}`);
+  svg.appendChild(use);
+  return svg;
+}
+
+/** Like makeIconUse, but for symbols with a non-square viewBox (e.g. the tall bridge deck). */
+export function makeIconUseSized(
+  symbolId: string,
+  viewBox: string,
+  widthPx: number,
+  heightPx: number,
+  className: string,
+): SVGSVGElement {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", viewBox);
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("width", String(widthPx));
+  svg.setAttribute("height", String(heightPx));
   svg.setAttribute("class", className);
   const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
   use.setAttribute("href", `#${symbolId}`);

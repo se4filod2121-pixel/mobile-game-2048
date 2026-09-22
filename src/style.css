@@ -383,6 +383,31 @@ button {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
 }
 
+/* Reeds growing right at a riverbank, drawn on top of the water's edge. */
+.scenery-reed {
+  opacity: 0.95;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* A river/stream band cutting across the whole width. Sits above ground scenery (painted
+   last within .map-forest) but below the path stroke and houses, so the road always reads
+   as crossing over the water. */
+.river-band {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 -3px 4px rgba(0, 0, 0, 0.25)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* The wooden bridge deck carrying the road over a river — sits in the house layer so it
+   paints above both the water and the thin dirt path stroke at the crossing. */
+.map-bridge {
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+
 .village-banner-marker {
   position: absolute;
   transform: translateY(-50%);
@@ -560,12 +585,17 @@ button {
 .house-label {
   font-family: "Baloo 2", sans-serif;
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.3px;
   color: var(--ink-dim);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .house-active .house-label {
   color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.55);
 }
 
 .house-target {
